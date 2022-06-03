@@ -16,6 +16,7 @@ plot_3D_plotly <- function(data_to_plot, color_ref){
     mutate(group_id =cur_group_id())%>%
     ungroup()
   
+  # distinctColorPalette(length(unique(data_to_plot$group_id)))
   data_to_plot <- data_to_plot%>%
     left_join(
       data.frame(color = distinctColorPalette(length(unique(data_to_plot$group_id))))%>%
@@ -27,14 +28,14 @@ plot_3D_plotly <- function(data_to_plot, color_ref){
     mutate_(
       group_id = color_ref
     )
-  
+
   fig <- data_to_plot%>%
     plot_ly(
       x = ~X1, 
       y = ~X2, 
       z = ~X3, 
       color = ~group_id, 
-      colors = data_to_plot$color
+      colors = unique(unlist(data_to_plot[, "color"]))
     )
   fig <- fig %>% add_markers()
   fig <- fig %>% layout(

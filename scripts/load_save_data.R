@@ -11,6 +11,7 @@ library(RColorBrewer)
 library(finalfit)
 library(knitr)
 library(plotly)
+library(data.table)
 knitr::knit_hooks$set(webgl = hook_webgl)
 
 # Initialisation des paramètres

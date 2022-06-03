@@ -29,8 +29,8 @@ m_dist_func <- function(data_frame1, data_frame2, type = "diff_mean", output = "
   if(output == "matrix"){
     mat.distance.diff = matrix(NA, nrow = n1, ncol = n2)
     if(type == "diff_mean"){
-      row_names1 <- paste0("R", rep1, sprintf("%02d", seq_len(n1)))
-      row_names2 <- paste0("R", rep2, sprintf("%02d", seq_len(n2)))
+      row_names1 <- paste0("R", rep1, sprintf("%02d", pull(data_frame1[, 4])))
+      row_names2 <- paste0("R", rep2, sprintf("%02d", pull(data_frame2[, 4])))
     }else if(type == "diff_ind"){
       row_names1 <- paste0("R", rep1, "B", sprintf("%02d", data_frame1[, 4]), "CRH", sprintf("%02d", data_frame1[, 6]))
       row_names2 <- paste0("R", rep2, "B", sprintf("%02d", data_frame2[, 4]), "CRH", sprintf("%02d", data_frame2[, 6]))
