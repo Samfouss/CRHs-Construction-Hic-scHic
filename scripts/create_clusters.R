@@ -38,12 +38,13 @@ create_clust_graph <- function(all_data, rep_num, block, min_dist = 3){
       pull(all_data[all_data$X4==block, 5])
     )
   )
-  
+  # On enlève la diagonale
+  diag(compute_dist_bin) = 0
   net <- graph_from_adjacency_matrix(
     compute_dist_bin, 
     mode='undirected'
   )
-  net <- simplify(net, remove.multiple = FALSE, remove.loops = TRUE)
+  #net <- simplify(net, remove.multiple = FALSE, remove.loops = TRUE)
   # dev.off()
   par(mar = c(1, 1, 1, 1))
   g <- plot(net, edge.arrow.size=.4,vertex.label=NA, main = paste0("Représenation graphique du block ", block, " pour le replicat ", rep_num))
@@ -60,7 +61,7 @@ create_clust_graph <- function(all_data, rep_num, block, min_dist = 3){
   
   res = list(
     #"dist" = compute_dist,
-    #"dist_bin" = compute_dist_bin,
+    "dist_bin" = compute_dist_bin,
     "edges" = edges,
     "plot" = g,
     "net" = net
