@@ -123,6 +123,7 @@ overlap_edg_max <- cbind(sort(c1max,decreasing = T),sort(c2max,decreasing = T)[1
 
 
 overlap_edg_max
+sum(overlap_edg_max[,1]==overlap_edg_max[,2])
 ### Comparaison des résulats des méthodes 
 dist_r1_r2_bl1_min
 overlap_min

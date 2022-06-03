@@ -41,7 +41,7 @@ edge_identity_overlap <- function(structure_net_comp1, structure_net_comp2, dist
     mat1[structure_net_comp1$membership==i,structure_net_comp1$membership==i] = dist_bin1[structure_net_comp1$membership==i,structure_net_comp1$membership==i]
     for (j in (1:structure_net_comp2$no)[structure_net_comp2$csize>1]){
       mat2 = matrix(0,nrow(dist_bin2),ncol(dist_bin2))
-      mat2[structure_net_comp1$membership==j,structure_net_comp1$membership==j] = dist_bin2[structure_net_comp1$membership==j,structure_net_comp1$membership==j]
+      mat2[structure_net_comp2$membership==j,structure_net_comp2$membership==j] = dist_bin2[structure_net_comp2$membership==j,structure_net_comp2$membership==j]
       chevauche_1_2[i,j] = sum(mat1&mat2) /sum(mat1|mat2)
     }
   }
