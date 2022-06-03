@@ -54,8 +54,10 @@ edges_overlap <- function(data_frame1, data_frame2, rep1, rep2, edge_var, crh_va
     }
   }
   
-  ens1_list = apply(chevauche,1,which.max)
-  ens2_list = apply(chevauche,2,which.max)
+#  ens1_list = apply(chevauche,1,which.max)
+#  ens2_list = apply(chevauche,2,which.max)
+  ens1_list = dimnames(chevauche)[[2]][apply(chevauche, MARGIN = 1, FUN = which.max)]
+  ens2_list = dimnames(chevauche)[[1]][apply(chevauche, MARGIN = 2, FUN = which.max)]
   
   # Composantes du réplicat 1 et leur composante chevauchant le plus dans le réplicat 2
   edges_chev_chr_comp1 = rbind(crh_list1, ens1_list)

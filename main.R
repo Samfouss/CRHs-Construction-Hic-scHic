@@ -107,16 +107,17 @@ overlap_min
 ### 3 - Similarité entre les CRHs en terme du nombre d'arrêtes des éléments
 overlap_edg <- edges_overlap(structure_1_1, structure_2_1, 1, 2, "nb_edges", "crh_id")
 
-overlap_edg_min <- cbind(
-  sort(apply(overlap_edg$chevauche, MARGIN = 1, FUN = max, na.rm = TRUE)),
-  sort(apply(overlap_edg$chevauche, MARGIN = 2, FUN = max, na.rm = TRUE))
+overlap_edg_max <- cbind(
+  sort(apply(overlap_edg$chevauche, MARGIN = 1, FUN = max, na.rm = TRUE),decreasing = T),
+  sort(apply(overlap_edg$chevauche, MARGIN = 2, FUN = max, na.rm = TRUE),decreasing = T)
 )
 
-overlap_edg_min
-### Coparaison des résulats des méthodes 
+overlap_edg_max
+sum(overlap_edg_max[,1]==overlap_edg_max[,2])
+### Comparaison des résulats des méthodes 
 dist_r1_r2_bl1_min
 overlap_min
-overlap_edg_min
+overlap_edg_max
 
 
 
