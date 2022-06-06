@@ -49,9 +49,9 @@ edge_identity_overlap <- function(structure_net_comp1, structure_net_comp2, dist
   c1.list = apply(chevauche_1_2,1,which.max)
   c2.list = apply(chevauche_1_2,2,which.max)
   # Composantes du réplicat 1 et leur composante chevauchant le plus dans le réplicat 2
-  chev_crh_comp1 = rbind((1:structure_net_comp1$no)[structure_net_comp1$csize>1], unlist(c1.list[structure_net_comp1$csize>1]))
+  chev_crh_comp1 = cbind((1:structure_net_comp1$no)[structure_net_comp1$csize>1], unlist(c1.list[structure_net_comp1$csize>1]))
   # Composantes du réplicat 2 et leur composante chevauchant le plus dans le réplicat 1
-  chev_crh_comp2 = rbind((1:structure_net_comp2$no)[structure_net_comp2$csize>1], unlist(c2.list[structure_net_comp2$csize>1]))
+  chev_crh_comp2 = cbind((1:structure_net_comp2$no)[structure_net_comp2$csize>1], unlist(c2.list[structure_net_comp2$csize>1]))
   
   results = list(
     "chevauche_1_2_perc" = chevauche_1_2,
