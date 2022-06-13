@@ -32,9 +32,9 @@ for (j in 1:rep_number) {
 }
 
 # Création d'un identifiant pour chaque lignes
-structure_1$ID <- paste0("B", structure_1$X4, sprintf("%03d", 1:nrow(structure_1)))
-structure_2$ID <- paste0("B", structure_2$X4, sprintf("%03d", 1:nrow(structure_2)))
-structure_3$ID <- paste0("B", structure_3$X4, sprintf("%03d", 1:nrow(structure_3)))
-structure_4$ID <- paste0("B", structure_4$X4, sprintf("%03d", 1:nrow(structure_4)))
+structure_1$ID <- paste0("B", sprintf("%02d", structure_1$X4), sprintf("%04d", 1:nrow(structure_1)))
+structure_2$ID <- paste0("B", sprintf("%02d", structure_2$X4), sprintf("%04d", 1:nrow(structure_2)))
+structure_3$ID <- paste0("B", sprintf("%02d", structure_3$X4), sprintf("%04d", 1:nrow(structure_3)))
+structure_4$ID <- paste0("B", sprintf("%02d", structure_4$X4), sprintf("%04d", 1:nrow(structure_4)))
 
 

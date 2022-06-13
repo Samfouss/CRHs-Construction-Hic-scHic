@@ -6,13 +6,39 @@
 #' `plot_3D_plotly` Cette fonction donne une representation graphique des 
 #' points en 3D en utilisant plotly
 #'
-#' @param data_to_plot 
-#' @param color_ref 
+#' @param data_rep1_to_plot : le premier replicat à representer
+#' @param data_rep1_to_plot : le deuxième replicat à representer
+#' @param block_to_rep : le numero du block à representer
+#' @param crh_match_list : la liste contenant l'ensemble des CRHs qui matchent pour tous les blocks
 
-plot_3D_plotly <- function(data_to_plot, color_ref){
+# sprintf("%03d", block_to_rep)
+plot_3D_plotly <- function(data_rep1_to_plot, data_rep2_to_plot, block_to_rep, crh_match_list){
   
-  data_to_plot <- data_to_plot %>% 
-    group_by_(color_ref) %>% 
+  crh_match_list1 = crh_match_list[[block_to_rep]]$crh_edge_match[1, ]
+  crh_match_list2 = crh_match_list[[block_to_rep]]$crh_edge_match[2, ]
+  
+  data_to_plot <- data_rep1_to_plot%>%
+    filter(X4==block_to_rep)%>%
+    mutate(
+      rep_num = "1"
+    )%>%
+    filter(crh_id %in% crh_match_list1)%>%
+    bind_rows(
+      data_rep2_to_plot%>%
+        filter(X4==block_to_rep)%>%
+        mutate(
+          rep_num = "2"
+        )%>%
+        filter(crh_id %in% crh_match_list2)
+    )%>%
+    mutate(
+      crh_id_ = paste0(rep_num, sprintf("%02d", crh_id))
+    )
+  
+  data_to_plot
+  
+  data_to_plot <- data_to_plot %>%
+    group_by(crh_id_) %>%
     mutate(group_id =cur_group_id())%>%
     ungroup()
   
@@ -26,9 +52,9 @@ plot_3D_plotly <- function(data_to_plot, color_ref){
     )%>%
     arrange(group_id)%>%
     mutate_(
-      group_id = color_ref
+      group_id = "crh_id_"
     )
-
+  
   fig <- data_to_plot%>%
     plot_ly(
       x = ~X1, 
@@ -44,59 +70,7 @@ plot_3D_plotly <- function(data_to_plot, color_ref){
                  zaxis = list(title = 'X3'))
   )
   fig
+  
 }
 
 
-#' Cette fonction donne une representation graphique des points en 3D en utilisant
-#' plot3d
-#'
-#' @description
-#' `plot_3D` Cette fonction donne une representation graphique des 
-#' points en 3D en utilisant plot3d
-#'
-#' @param data_to_plot 
-#' @param color_ref 
-
-plot_3D <- function(data_too_plot, color_ref , display = FALSE, radus = .3, axe_rotate = c(1,0,0), rotate_speed = 3, duration = 10, gif=FALSE){
-  
-  data_too_plot <- data_too_plot %>% 
-    group_by_(color_ref) %>% 
-    mutate(group_id =cur_group_id())%>%
-    ungroup()
-  
-  data_too_plot <- data_too_plot%>%
-    left_join(
-      data.frame(color = distinctColorPalette(length(unique(data_too_plot$group_id))))%>%
-        rownames_to_column("group_id")%>%
-        mutate(group_id = as.numeric(group_id)),
-      by = "group_id"
-    )
-  
-  par3d(windowRect = c(0, 0, 1100, 700))
-  plot3d(
-    x = as.numeric(unlist(data_too_plot[,1])), 
-    y = as.numeric(unlist(data_too_plot[,2])), 
-    z = as.numeric(unlist(data_too_plot[,3])), 
-    col = data_too_plot$color, 
-    type = "s", 
-    radius = radus,
-    xlab = "X", 
-    ylab = "Y", 
-    zlab = "Z"
-  )
-  
-  if (display){
-    play3d(spin3d(axis = axe_rotate, rpm = rotate_speed), duration = duration) 
-  }
-  
-  if(gif){
-    play3d(spin3d(axis = axe_rotate, rpm = rotate_speed), duration = duration)
-    movie3d(
-      spin3d(axis = axe_rotate, rpm = rotate_speed),
-      duration = duration,
-      type = "gif",
-      dir = ".",
-      fps = 20
-    )
-  }
-}
