@@ -34,6 +34,7 @@ create_clust_graph <- function(all_data, rep_num, block_vec, min_dist = 3){
       compute_dist, 
       FUN = function(item) ifelse(item<=min_dist, 1, 0)
     )
+<<<<<<< HEAD
     
     
     compute_dist_bin <- matrix(
@@ -45,6 +46,26 @@ create_clust_graph <- function(all_data, rep_num, block_vec, min_dist = 3){
         pull(all_data[all_data$X4==b, 5]),
         pull(all_data[all_data$X4==b, 5])
       )
+=======
+  )
+  # On enlève la diagonale
+  diag(compute_dist_bin) = 0
+  net <- graph_from_adjacency_matrix(
+    compute_dist_bin, 
+    mode='undirected'
+  )
+  #net <- simplify(net, remove.multiple = FALSE, remove.loops = TRUE)
+  # dev.off()
+  par(mar = c(1, 1, 1, 1))
+  g <- plot(net, edge.arrow.size=.4,vertex.label=NA, main = paste0("Représenation graphique du block ", block, " pour le replicat ", rep_num))
+  g
+  par(par_default)
+  
+  edges <- data.frame(table(unlist(strsplit(attr(E(net)[which_mutual(net)],"vnames"),"\\|"))))%>%
+    rename(
+      ID = Var1,
+      nb_edges = Freq
+>>>>>>> f17f9cda862cba86b7b0c7ba5053125c8850617a
     )
     
     net <- graph_from_adjacency_matrix(
@@ -89,8 +110,19 @@ create_clust_graph <- function(all_data, rep_num, block_vec, min_dist = 3){
     
   }
   
+<<<<<<< HEAD
   res[[length(res)+1]] <- list(
     "structure" = structure
+=======
+  # , vertex.color="yellow",vertex.size=15,vertex.label.color="blue",edge.color="red",edge.width=5
+  
+  res = list(
+    #"dist" = compute_dist,
+    "dist_bin" = compute_dist_bin,
+    "edges" = edges,
+    "plot" = g,
+    "net" = net
+>>>>>>> f17f9cda862cba86b7b0c7ba5053125c8850617a
   )
   
   names(res) <- c(str_c("clust_block", block), "clust_block")
