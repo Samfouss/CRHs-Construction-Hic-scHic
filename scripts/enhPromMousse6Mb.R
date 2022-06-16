@@ -9,6 +9,7 @@ BiocManager::install("TxDb.Mmusculus.UCSC.mm10.knownGene")
 BiocManager::install("org.Mm.eg.db")
 ## Chargeent des librairy
 library(rtracklayer)
+library(IRanges)
 library(TxDb.Mmusculus.UCSC.mm10.knownGene)
 library(org.Mm.eg.db)
 
@@ -31,12 +32,34 @@ genes_muscu$geneSymbol <- symbol$SYMBOL
 genesInRRCs = genes_muscu[genes_muscu$geneSymbol%in%musculusSox9Gene$Name]
 
 promoters = promoters(genesInRRCs)
+# On filtre les promoters qui ne sont pas sur le chroosome 11
+promotersChr11 = promoters[promoters@seqnames=="chr11"]
 
-df.promoters = data.frame(promoters)
-df.promoters = df.promoters[, c("seqnames", "start", "end", "geneSymbol")]
-colnames(df.promoters) = c("chr", "startProm", "endProm", "Name")
+# On a au total 6Mbases soit 6 000 0000 bases
+# Soit 2667 bases par bille. Pour chaque bille, on aura un range de longueur 2667
+# Création de IRganges
+polymers_range <- seq(from = (109000000-1), to = 115000000, by = 2667)
+polymers_query <- IRanges(
+  polymers_range[1:(length(polymers_range))]+1,
+  c(polymers_range[2:length(polymers_range)], 115000000),
+  names=sprintf("%04d", 1:length(polymers_range))
+)
+# Récupération des IRanges sur le chromozome 11
+polymers_subject <- promotersChr11@ranges
+# Trouver les chevauchements
+polymers_promoter <- findOverlaps(polymers_query, polymers_subject)
+# Récupérer les IDs des billes sans les dupliquées
+promoters_ids <- polymers_promoter@from[!duplicated(polymers_promoter@from)]
 
-enhancers.promoters = merge(musculusSox9Gene, df.promoters, by="Name")
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Test de fusion_comp
 overlap_edg <- edge_identity_overlap(
   structure_1_net, 
@@ -20,18 +19,6 @@ rbind(
 )
 
 paires.crh = tmp[duplicated(tmp),]
-
-=======
-library(igraph)
-# Test de fusion_comp
-overlap_edg <- edge_identity_overlap(structure_1_1_net_comp, structure_2_1_net_comp,structure_1_1_net$dist_bin, structure_2_1_net$dist_bin)
-overlap_edg$chevauche_1_2_perc
-overlap_edg$chev_crh_comp1
-overlap_edg$chev_crh_comp2
-
-tmp = rbind(overlap_edg$chev_crh_comp1,overlap_edg$chev_crh_comp2[,2:1])
-paires.crh = tmp[duplicated(tmp),]
->>>>>>> f17f9cda862cba86b7b0c7ba5053125c8850617a
 adjcomp = fusion_comp(structure_1_1_net_comp, structure_2_1_net_comp,structure_1_1_net$dist_bin, structure_2_1_net$dist_bin,paires.crh[1,])
 
 structure_net_comp1 = structure_1_1_net_comp
@@ -75,8 +62,5 @@ for (i in 1:length(cc.list)) adj_fusion[(nr.vec[i]+1):nr.vec[i+1],(nr.vec[i]+1):
 structure_fusion_1_net = list("dist_bin" = adj_fusion,"net" = graph_from_adjacency_matrix(
   adj_fusion, mode='undirected'))
 par(mar = c(1, 1, 1, 1))
-<<<<<<< HEAD
 plot(structure_fusion_1_net$net, edge.arrow.size=.4,vertex.label=NA)
-=======
-plot(structure_fusion_1_net$net, edge.arrow.size=.4,vertex.label=NA)
->>>>>>> f17f9cda862cba86b7b0c7ba5053125c8850617a
+
