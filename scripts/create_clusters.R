@@ -53,38 +53,28 @@ create_bip_clust_graph <- function(all_data, promoters_vec, rep_num, block_vec, 
     net <- graph_from_incidence_matrix(
       compute_dist_bin_bip
     )
+    
     net <- simplify(net, remove.multiple = FALSE, remove.loops = TRUE)
-    # dev.off()
-    par(mar = c(1, 1, 1, 1))
-    g <- plot(net, edge.arrow.size=.4,vertex.label=NA, main = paste0("Représenation graphique du block ", b, " pour le replicat ", rep_num))
-    g
-    par(par_default)
-    
     net_components <- components(net, mode = c("weak", "strong"))
+    #biggest_cluster <- which.max(net_components$csize)
+    #net_comp2 <- clusters(net, mode="weak")
+    plot_main_cluster <- which(net_components$csize>1)
+    vert_ids <- V(net)[net_components$membership %in% plot_main_cluster]
+    net_to_plot <- induced_subgraph(net, vert_ids)
+    V(net_to_plot)$color <- V(net_to_plot)$type
+    V(net_to_plot)$color=gsub("FALSE","red",V(net_to_plot)$color)
+    V(net_to_plot)$color=gsub("TRUE","lightblue",V(net_to_plot)$color)
     
-    edges <- data.frame(table(unlist(strsplit(attr(E(net)[which_mutual(net)],"vnames"),"\\|"))))%>%
-      rename(
-        ID = Var1,
-        nb_edges = Freq
-      )
-    
-    structure <- rbind(
-      structure, 
-      edges%>%
-        full_join(
-          data.frame(
-            ID = names(net_components$membership),
-            crh_id = net_components$membership
-          ),
-          by = "ID"
-        )
-    )
+    file_name = paste0("graphique_rep", rep_num, "_block", b, ".jpeg")
+    jpeg(file_name, width = 980, height = 680)
+    par(mar = c(1, 1, 1, 1))
+    plot(net_to_plot, edge.arrow.size=.2,vertex.label=NA, main = paste0("Représenation graphique du block ", b, " pour le replicat ", rep_num))
+    dev.off()
     
     res[[length(res)+1]] <- list(
-      "edges" = edges,
-      "plot" = g,
       "dist_bin" = compute_dist_bin,
       "dist_bin_bip" = compute_dist_bin_bip,
+      "net_to_plot" = net_to_plot,
       "membership" = net_components$membership,
       "csize" = net_components$csize,
       "no" = net_components$no

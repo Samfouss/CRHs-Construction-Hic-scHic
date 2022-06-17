@@ -1,12 +1,12 @@
 ## Installation de bioconductor si c'est pas le cas sur la machine
-if (!require("BiocManager", quietly = TRUE))
-  install.packages("BiocManager")
+# if (!require("BiocManager", quietly = TRUE))
+#   install.packages("BiocManager")
 
 ## Installation des packages dont on aura probablement besoin
-BiocManager::install("IRanges")
-BiocManager::install("rtracklayer") # Ce package permet d'importer les fichiers génomiques de différents formats
-BiocManager::install("TxDb.Mmusculus.UCSC.mm10.knownGene")
-BiocManager::install("org.Mm.eg.db")
+# BiocManager::install("IRanges")
+# BiocManager::install("rtracklayer") # Ce package permet d'importer les fichiers génomiques de différents formats
+# BiocManager::install("TxDb.Mmusculus.UCSC.mm10.knownGene")
+# BiocManager::install("org.Mm.eg.db")
 ## Chargeent des librairy
 library(rtracklayer)
 library(IRanges)

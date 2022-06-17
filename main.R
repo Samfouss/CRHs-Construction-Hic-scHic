@@ -1,4 +1,4 @@
-source("./scripts/enhProMousse.R")
+source("./scripts/enhPromMousse6Mb.R")
 source("./scripts/load_save_data.R")
 source("./scripts/create_clusters.R")
 source("./scripts/chevauche_CRHs_fn.R")
@@ -17,7 +17,8 @@ table(structure_1[promoters_ids, ]$X4)
 ######################### Creation des CRHs #########################
 
 ### Structure 1 block 1
-structure_1_net <- create_clust_graph(structure_1, 1, 1:16, 3)
+#structure_1_net <- create_clust_graph(structure_1, 1, 1:16, 3)
+structure_1_net_bip <- create_bip_clust_graph(structure_1, promoters_ids, 1, 1:16, 3)
 structure_1_ <- structure_1%>%
   left_join(
     structure_1_net$clust_block$structure,
@@ -27,7 +28,8 @@ structure_1_ <- structure_1%>%
 
 
 ### Structure 2 block 1
-structure_2_net <- create_clust_graph(structure_2, 2, 1:16, 3)
+#structure_2_net <- create_clust_graph(structure_2, 2, 1:16, 3)
+structure_2_net_bip <- create_bip_clust_graph(structure_2, promoters_ids, 2, 1:16, 3)
 structure_2_ <- structure_2%>%
   left_join(
     structure_2_net$clust_block$structure,
