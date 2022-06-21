@@ -1,3 +1,4 @@
+source("./scripts/enhPromMousse6Mb.R")
 source("./scripts/load_save_data.R")
 source("./scripts/create_clusters.R")
 source("./scripts/chevauche_CRHs_fn.R")
@@ -24,6 +25,7 @@ table(structure_1[promoters_ids, ]$X4)
 ### Structure 1 block 1
 #structure_1_net <- create_clust_graph(structure_1, 1, 1:16, 3)
 structure_1_net_bip <- create_bip_clust_graph(structure_1, promoters_ids, 1, 1:16, 3)
+structure_1_net_bip$clust_block1$dist_bin
 structure_1_ <- structure_1%>%
   left_join(
     structure_1_net$clust_block$structure,
@@ -44,18 +46,12 @@ structure_2_ <- structure_2%>%
 
 ################### Methodes d'appariement des CRHs ###################
 
-### 1 - Similarité entre les CRHs en terme de nombre d'élements
-overlap_crh <- chr_overlap(structure_1_net, structure_2_net)
-
-### 2 - Similarité entre les CRHs en terme du nombre d'arrêtes des éléments
-overlap_edge <- edge_identity_overlap(structure_1_net, structure_2_net)
-
-### 3 - On récupère ici pour chaque block les CRHs qui été selectionnés par les deux méthodes 
-crhs_select <- select_crh_candidats(overlap_crh, overlap_edge)
+### Similarité entre les CRHs en terme du nombre d'arrêtes des éléments
+overlap_edge <- edge_identity_overlap(structure_1_net_bip, structure_2_net_bip)
 
 # Afficher les matchs selectionnés
 for (i in 1:16) {
-  print(crhs_select[[i]]$crh_edge_match)
+  print(overlap_edge[[i]]$chev_edge_comp)
 }
 
 ### 4 Représentation graphique des CRHs matchés

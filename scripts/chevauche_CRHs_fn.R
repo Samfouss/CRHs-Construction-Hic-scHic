@@ -72,27 +72,45 @@ edge_identity_overlap <- function(structure_net_comp1, structure_net_comp2){
   
   for (b in seq_len(n_block)){
     
-    dist_bin1 = structure_net_comp1[[b]]$dist_bin
-    dist_bin2 = structure_net_comp2[[b]]$dist_bin
-    chevauche_1_2 = matrix(NA,structure_net_comp1[[b]]$no,structure_net_comp2[[b]]$no)
+    dist_bin1 = structure_net_comp1[[b]]$dist_bin_bip
+    dist_bin2 = structure_net_comp2[[b]]$dist_bin_bip
+    chevauche_1_2 = matrix(
+      NA,
+      structure_net_comp1[[b]]$no_bip,
+      structure_net_comp2[[b]]$no_bip
+    )
     
-    for (i in (1:structure_net_comp1[[b]]$no)[structure_net_comp1[[b]]$csize>1]){
-      mat1 = matrix(0,nrow(dist_bin1),ncol(dist_bin1))
-      mat1[
-        structure_net_comp1[[b]]$membership==i,
-        structure_net_comp1[[b]]$membership==i] = dist_bin1[
-          structure_net_comp1[[b]]$membership==i,
-          structure_net_comp1[[b]]$membership==i
-        ]
+    for (i in (1:structure_net_comp1[[b]]$no_bip)[structure_net_comp1[[b]]$csize_bip>1]){
       
-      for (j in (1:structure_net_comp2[[b]]$no)[structure_net_comp2[[b]]$csize>1]){
-        mat2 = matrix(0,nrow(dist_bin2),ncol(dist_bin2))
-        mat2[
-          structure_net_comp2[[b]]$membership==j,
-          structure_net_comp2[[b]]$membership==j] = dist_bin2[
-            structure_net_comp2[[b]]$membership==j,
-            structure_net_comp2[[b]]$membership==j
+      mat1 <- dist_bin1
+      if(is.matrix(mat1)){
+        mat1[mat1 != 0]<- 0
+        
+        membership1 <- structure_net_comp1[[b]]$membership_bip
+        mat1[
+          row.names(dist_bin1) %in% names(membership1[membership1==i]),
+          names(membership1[membership1==i])
+        ] = dist_bin1[
+          row.names(dist_bin1) %in% names(membership1[membership1==i]),
+          names(membership1[membership1==i])
+        ]
+      }
+      
+      for (j in (1:structure_net_comp2[[b]]$no_bip)[structure_net_comp2[[b]]$csize_bip>1]){
+        
+        mat2 <- dist_bin2
+        if(is.matrix(mat2)){
+          mat2[mat2 != 0]<- 0
+          
+          membership2 <- structure_net_comp2[[b]]$membership_bip
+          mat2[
+            row.names(dist_bin2) %in% names(membership2[membership2==i]),
+            names(membership2[membership2==i])
+          ] = dist_bin2[
+            row.names(dist_bin2) %in% names(membership2[membership2==i]),
+            names(membership2[membership2==i])
           ]
+        }
         chevauche_1_2[i,j] = sum(mat1&mat2)/sum(mat1|mat2)
       }
       
@@ -102,13 +120,13 @@ edge_identity_overlap <- function(structure_net_comp1, structure_net_comp2){
     c2.list = apply(chevauche_1_2,2,which.max)
     # Composantes du réplicat 1 et leur composante chevauchant le plus dans le réplicat 2
     chev_edge_comp1 = rbind(
-      (1:structure_net_comp1[[b]]$no)[structure_net_comp1[[b]]$csize>1], 
-      unlist(c1.list[structure_net_comp1[[b]]$csize>1])
+      (1:structure_net_comp1[[b]]$no_bip)[structure_net_comp1[[b]]$csize_bip>1], 
+      unlist(c1.list[structure_net_comp1[[b]]$csize_bip>1])
     )
     # Composantes du réplicat 2 et leur composante chevauchant le plus dans le réplicat 1
     chev_edge_comp2 = rbind(
-      (1:structure_net_comp2[[b]]$no)[structure_net_comp2[[b]]$csize>1], 
-      unlist(c2.list[structure_net_comp2[[b]]$csize>1])
+      (1:structure_net_comp2[[b]]$no_bip)[structure_net_comp2[[b]]$csize_bip>1], 
+      unlist(c2.list[structure_net_comp2[[b]]$csize_bip>1])
     )
     
     chev_edge_comp = matrix(NA, 2, ncol = min(ncol(chev_edge_comp1), ncol(chev_edge_comp2)))
