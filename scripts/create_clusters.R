@@ -54,7 +54,7 @@ create_bip_clust_graph <- function(all_data, promoters_vec, rep_num, block_vec, 
     
     diag(compute_dist_bin) <- 0
     
-    compute_dist_bin_bip <- compute_dist_bin[block_promoters, ]
+    compute_dist_bin_bip <- compute_dist_bin[block_promoters, , drop=FALSE]
     
     net <- graph_from_incidence_matrix(
       compute_dist_bin

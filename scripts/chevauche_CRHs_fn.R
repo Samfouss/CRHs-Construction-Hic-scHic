@@ -67,13 +67,15 @@ chr_overlap <- function(structure_net_comp1, structure_net_comp2){
 #' @param point_2 
 edge_identity_overlap <- function(structure_net_comp1, structure_net_comp2){
   
+  # On recupère les blocs à parcourir
   n_block = length(structure_net_comp1) - 1
+  # Initialisation de la liste à recevoir les résultats
   results = list()
   
   for (b in seq_len(n_block)){
     
-    dist_bin1 = structure_net_comp1[[b]]$dist_bin_bip
-    dist_bin2 = structure_net_comp2[[b]]$dist_bin_bip
+    dist_bin1 = as.matrix(structure_net_comp1[[b]]$dist_bin_bip)
+    dist_bin2 = as.matrix(structure_net_comp2[[b]]$dist_bin_bip)
     chevauche_1_2 = matrix(
       NA,
       structure_net_comp1[[b]]$no_bip,
@@ -82,35 +84,40 @@ edge_identity_overlap <- function(structure_net_comp1, structure_net_comp2){
     
     for (i in (1:structure_net_comp1[[b]]$no_bip)[structure_net_comp1[[b]]$csize_bip>1]){
       
-      mat1 <- dist_bin1
-      if(is.matrix(mat1)){
-        mat1[mat1 != 0]<- 0
-        
-        membership1 <- structure_net_comp1[[b]]$membership_bip
-        mat1[
-          row.names(dist_bin1) %in% names(membership1[membership1==i]),
-          names(membership1[membership1==i])
-        ] = dist_bin1[
-          row.names(dist_bin1) %in% names(membership1[membership1==i]),
-          names(membership1[membership1==i])
-        ]
-      }
+      mat1 <- matrix(
+        0,
+        nrow(dist_bin1),
+        ncol(dist_bin1),
+        dimnames = dimnames(dist_bin1)
+      )
+      
+      membership1 <- structure_net_comp1[[b]]$membership_bip
+      mat1[
+        row.names(dist_bin1) %in% names(membership1[membership1==i]),
+        names(membership1[membership1==i])
+      ] = dist_bin1[
+        row.names(dist_bin1) %in% names(membership1[membership1==i]),
+        names(membership1[membership1==i])
+      ]
       
       for (j in (1:structure_net_comp2[[b]]$no_bip)[structure_net_comp2[[b]]$csize_bip>1]){
         
-        mat2 <- dist_bin2
-        if(is.matrix(mat2)){
-          mat2[mat2 != 0]<- 0
-          
-          membership2 <- structure_net_comp2[[b]]$membership_bip
-          mat2[
-            row.names(dist_bin2) %in% names(membership2[membership2==i]),
-            names(membership2[membership2==i])
-          ] = dist_bin2[
-            row.names(dist_bin2) %in% names(membership2[membership2==i]),
-            names(membership2[membership2==i])
-          ]
-        }
+        mat2 <- matrix(
+          0,
+          nrow(dist_bin2),
+          ncol(dist_bin2),
+          dimnames = dimnames(dist_bin2)
+        )
+        
+        membership2 <- structure_net_comp2[[b]]$membership_bip
+        mat2[
+          row.names(dist_bin2) %in% names(membership2[membership2==j]),
+          names(membership2[membership2==j])
+        ] = dist_bin2[
+          row.names(dist_bin2) %in% names(membership2[membership2==j]),
+          names(membership2[membership2==j])
+        ]
+        
         chevauche_1_2[i,j] = sum(mat1&mat2)/sum(mat1|mat2)
       }
       

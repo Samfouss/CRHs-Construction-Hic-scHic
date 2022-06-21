@@ -23,26 +23,12 @@ table(structure_1[promoters_ids, ]$X4)
 ######################### Creation des CRHs #########################
 
 ### Structure 1 block 1
-#structure_1_net <- create_clust_graph(structure_1, 1, 1:16, 3)
+# Création des CRHs avec la structure 1
 structure_1_net_bip <- create_bip_clust_graph(structure_1, promoters_ids, 1, 1:16, 3)
-structure_1_net_bip$clust_block1$dist_bin
-structure_1_ <- structure_1%>%
-  left_join(
-    structure_1_net$clust_block$structure,
-    by = "ID"
-  )%>%
-  filter(!is.na(nb_edges))
-
 
 ### Structure 2 block 1
-#structure_2_net <- create_clust_graph(structure_2, 2, 1:16, 3)
+# Création des CRHs avec la structure 2
 structure_2_net_bip <- create_bip_clust_graph(structure_2, promoters_ids, 2, 1:16, 3)
-structure_2_ <- structure_2%>%
-  left_join(
-    structure_2_net$clust_block$structure,
-    by = "ID"
-  )%>%
-  filter(!is.na(nb_edges))
 
 ################### Methodes d'appariement des CRHs ###################
 
@@ -51,6 +37,7 @@ overlap_edge <- edge_identity_overlap(structure_1_net_bip, structure_2_net_bip)
 
 # Afficher les matchs selectionnés
 for (i in 1:16) {
+  print(paste0("#### Les CRHs qui matchent dans les deux sens (en ligne ou en colonne) dans le block ", i, " ####"))
   print(overlap_edge[[i]]$chev_edge_comp)
 }
 
