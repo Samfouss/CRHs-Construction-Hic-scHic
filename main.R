@@ -1,15 +1,16 @@
-source("./scripts/enhPromMousse6Mb.R")
+#source("./scripts/enhPromMousse6Mb.R")
+#source("./scripts/find_paires.R")
 source("./scripts/load_save_data.R")
 source("./scripts/create_clusters.R")
 source("./scripts/chevauche_CRHs_fn.R")
-source("./scripts/crhs_candidates.R")
+#source("./scripts/crhs_candidates.R")
 
 source("./scripts/compute_distances_fn.R")
 #source("./scripts/create_2D_graphics_fn.R")
 source("./scripts/create_3D_graphics_fn.R")
 # source("./scripts/chevauche_CRHs_fn.R")
-source("./scripts/chevauche_CRHs_fn_.R")
-source("./scripts/find_min_by_rank.R")
+#source("./scripts/chevauche_CRHs_fn_.R")
+#source("./scripts/find_min_by_rank.R")
 
 # source("./scripts/compute_distances_fn.R")
 #source("./scripts/create_2D_graphics_fn.R")
@@ -18,7 +19,12 @@ source("./scripts/find_min_by_rank.R")
 
 # On peut voir que dans tous blocks, à des proportions différentes, on y trouve au moins un promoter
 sort(unique(structure_1[promoters_ids, ]$X4))
+promoters_ids[which(promoters_ids<341)]
+
 table(structure_1[promoters_ids, ]$X4)
+table(structure_2[promoters_ids, ]$X4)
+table(structure_3[promoters_ids, ]$X4)
+table(structure_4[promoters_ids, ]$X4)
 
 ######################### Creation des CRHs #########################
 
@@ -45,4 +51,16 @@ for (i in 1:16) {
 ### On choisi ici de representer les 4 premier dans les deux premiers replicats
 grp <- plot_3D_plotly(structure_1_, structure_2_, 1, crhs_select)
 grp
+
+
+
+
+
+
+
+
+
+
+
+
 

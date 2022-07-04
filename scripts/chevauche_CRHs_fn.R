@@ -1,61 +1,3 @@
-#' Cette fonction permet d'appréhender le taux de chevauchement entre les CRHs
-#'
-#' @description
-#' #' `dist_func` retourne la distance entre deux points
-#'
-#' @param point_1 
-#' @param point_2 
-
-chr_overlap <- function(structure_net_comp1, structure_net_comp2){
-  
-  n_block = length(structure_net_comp1) - 1
-  results = list()
-  
-  for (b in seq_len(n_block)) {
-    
-    chevauche_1_2 = matrix(NA,structure_net_comp1[[b]]$no,structure_net_comp2[[b]]$no)
-    for (i in (1:structure_net_comp1[[b]]$no)[structure_net_comp1[[b]]$csize>1]){
-      for (j in (1:structure_net_comp2[[b]]$no)[structure_net_comp2[[b]]$csize>1]){
-        ens1 = names(structure_net_comp1[[b]]$membership)[structure_net_comp1[[b]]$membership==i]
-        ens2 = names(structure_net_comp2[[b]]$membership)[structure_net_comp2[[b]]$membership==j]
-        chevauche_1_2[i,j] = length(intersect(ens1,ens2)) /length(union(ens1,ens2))
-      }
-    }
-    
-    c1.list = apply(chevauche_1_2,1,which.max)
-    c2.list = apply(chevauche_1_2,2,which.max)
-    # Composantes du réplicat 1 et leur composante chevauchant le plus dans le réplicat 2
-    chev_crh_comp1 = rbind((1:structure_net_comp1[[b]]$no)[structure_net_comp1[[b]]$csize>1], unlist(c1.list[structure_net_comp1[[b]]$csize>1]))
-    # Composantes du réplicat 2 et leur composante chevauchant le plus dans le réplicat 1
-    chev_crh_comp2 = rbind((1:structure_net_comp2[[b]]$no)[structure_net_comp2[[b]]$csize>1], unlist(c2.list[structure_net_comp2[[b]]$csize>1]))
-    
-    
-    chev_crh_comp = matrix(NA, 2, ncol = min(ncol(chev_crh_comp1), ncol(chev_crh_comp2)))
-    
-    for (m1 in seq_len(ncol(chev_crh_comp1))) {
-      for (m2 in seq_len(ncol(chev_crh_comp2))) {
-        if(all(chev_crh_comp1[, m1]==rev(chev_crh_comp2[, m2]))){
-          chev_crh_comp[, sum(!is.na(chev_crh_comp[1, ])) + 1] <- chev_crh_comp1[, m1]
-        } 
-      }
-    }
-    
-    chev_crh_comp <- matrix(chev_crh_comp[!is.na(chev_crh_comp)], 2, ncol = length(chev_crh_comp[!is.na(chev_crh_comp)])/2)
-    
-    results[[length(results)+1]] <- list(
-      "chevauche_1_2_perc" = chevauche_1_2,
-      "chev_crh_comp1" = chev_crh_comp1,
-      "chev_crh_comp2" = chev_crh_comp2,
-      "chev_crh_comp" = chev_crh_comp,
-      "no" = c(length(unique(c1.list)), length(unique(c2.list)))
-    )
-    
-  }
-  
-  names(results) <- str_c("chr_overlap", seq_len(n_block))
-  results
-
-}
 
 
 #' Cette fonction permet d'appréhender le taux de chevauchement entre les CRHs
@@ -65,17 +7,35 @@ chr_overlap <- function(structure_net_comp1, structure_net_comp2){
 #'
 #' @param point_1 
 #' @param point_2 
+
+structure_1_net_bip <- create_bip_clust_graph(structure_1, promoters_ids, 1, 1:16, 3)
+structure_2_net_bip <- create_bip_clust_graph(structure_2, promoters_ids, 2, 1:16, 3)
+
+promoters_ids[which(promoters_ids<341)]
+
+structure_1_net_bip$clust_block1$lines
+
+structure_1_net_bip$clust_block1$dist_bin
+structure_1_net_bip$clust_block1$membership_bip
+structure_1_net_bip$clust_block1$csize_bip
+structure_1_net_bip$clust_block1$no_bip
+
+structure_1_net_bip$clust_block1$lines
+
+structure_net_comp1 <- structure_1_net_bip
+structure_net_comp2 <- structure_2_net_bip
+
 edge_identity_overlap <- function(structure_net_comp1, structure_net_comp2){
   
   # On recupère les blocs à parcourir
-  n_block = length(structure_net_comp1) - 1
+  n_block = length(structure_net_comp1)
   # Initialisation de la liste à recevoir les résultats
   results = list()
   
   for (b in seq_len(n_block)){
-    
-    dist_bin1 = as.matrix(structure_net_comp1[[b]]$dist_bin_bip)
-    dist_bin2 = as.matrix(structure_net_comp2[[b]]$dist_bin_bip)
+
+    dist_bin1 = as.matrix(structure_net_comp1[[b]]$dist_bin)
+    dist_bin2 = as.matrix(structure_net_comp2[[b]]$dist_bin)
     chevauche_1_2 = matrix(
       NA,
       structure_net_comp1[[b]]$no_bip,
@@ -160,7 +120,71 @@ edge_identity_overlap <- function(structure_net_comp1, structure_net_comp2){
   
   names(results) <- str_c("edge_overlap", seq_len(n_block))
   results
-
+  
 }
+
+
+
+
+
+#' Cette fonction permet d'appréhender le taux de chevauchement entre les CRHs
+#'
+#' @description
+#' #' `dist_func` retourne la distance entre deux points
+#'
+#' @param point_1 
+#' @param point_2 
+
+# chr_overlap <- function(structure_net_comp1, structure_net_comp2){
+#   
+#   n_block = length(structure_net_comp1) - 1
+#   results = list()
+#   
+#   for (b in seq_len(n_block)) {
+#     
+#     chevauche_1_2 = matrix(NA,structure_net_comp1[[b]]$no,structure_net_comp2[[b]]$no)
+#     for (i in (1:structure_net_comp1[[b]]$no)[structure_net_comp1[[b]]$csize>1]){
+#       for (j in (1:structure_net_comp2[[b]]$no)[structure_net_comp2[[b]]$csize>1]){
+#         ens1 = names(structure_net_comp1[[b]]$membership)[structure_net_comp1[[b]]$membership==i]
+#         ens2 = names(structure_net_comp2[[b]]$membership)[structure_net_comp2[[b]]$membership==j]
+#         chevauche_1_2[i,j] = length(intersect(ens1,ens2)) /length(union(ens1,ens2))
+#       }
+#     }
+#     
+#     c1.list = apply(chevauche_1_2,1,which.max)
+#     c2.list = apply(chevauche_1_2,2,which.max)
+#     # Composantes du réplicat 1 et leur composante chevauchant le plus dans le réplicat 2
+#     chev_crh_comp1 = rbind((1:structure_net_comp1[[b]]$no)[structure_net_comp1[[b]]$csize>1], unlist(c1.list[structure_net_comp1[[b]]$csize>1]))
+#     # Composantes du réplicat 2 et leur composante chevauchant le plus dans le réplicat 1
+#     chev_crh_comp2 = rbind((1:structure_net_comp2[[b]]$no)[structure_net_comp2[[b]]$csize>1], unlist(c2.list[structure_net_comp2[[b]]$csize>1]))
+#     
+#     
+#     chev_crh_comp = matrix(NA, 2, ncol = min(ncol(chev_crh_comp1), ncol(chev_crh_comp2)))
+#     
+#     for (m1 in seq_len(ncol(chev_crh_comp1))) {
+#       for (m2 in seq_len(ncol(chev_crh_comp2))) {
+#         if(all(chev_crh_comp1[, m1]==rev(chev_crh_comp2[, m2]))){
+#           chev_crh_comp[, sum(!is.na(chev_crh_comp[1, ])) + 1] <- chev_crh_comp1[, m1]
+#         } 
+#       }
+#     }
+#     
+#     chev_crh_comp <- matrix(chev_crh_comp[!is.na(chev_crh_comp)], 2, ncol = length(chev_crh_comp[!is.na(chev_crh_comp)])/2)
+#     
+#     results[[length(results)+1]] <- list(
+#       "chevauche_1_2_perc" = chevauche_1_2,
+#       "chev_crh_comp1" = chev_crh_comp1,
+#       "chev_crh_comp2" = chev_crh_comp2,
+#       "chev_crh_comp" = chev_crh_comp,
+#       "no" = c(length(unique(c1.list)), length(unique(c2.list)))
+#     )
+#     
+#   }
+#   
+#   names(results) <- str_c("chr_overlap", seq_len(n_block))
+#   results
+# 
+# }
+
 
 

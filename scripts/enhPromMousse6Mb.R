@@ -51,16 +51,6 @@ polymers_promoter <- findOverlaps(polymers_query, polymers_subject)
 # Récupérer les IDs des billes sans les dupliquées
 promoters_ids <- polymers_promoter@from[!duplicated(polymers_promoter@from)]
 
-
-
-
-
-
-
-
-
-
-
-
-
+# Save promoters ID
+save(promoters_ids, file = "rdata/promoters_ids.rda")
 

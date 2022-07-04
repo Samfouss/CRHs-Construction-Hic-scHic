@@ -7,25 +7,27 @@
 #' @param all_data 
 #' @param rep_num 
 
+
 create_bip_clust_graph <- function(all_data, promoters_vec, rep_num, block_vec, min_dist = 3){
   
   par_default <- par(bty = 'n')
   res = list()
   block <- unique(block_vec)
   
-  structure = data.frame()
+  # structure = data.frame()
   
   for (i in 1:length(block)) {
     
     b = block[i]
-    
     all_data <- all_data%>%
       mutate(
         is_promoter = if_else(row_number() %in% promoters_vec , 1, 0)
       )
     
     three_dim_data <- all_data[all_data$X4==b, 1:3]
-    block_promoters <- which(all_data[all_data$X4==b, "is_promoter"]$is_promoter==1)
+    block_promoters <- which(
+      all_data[all_data$X4==b, "is_promoter"]$is_promoter==1
+    )
     row.names(three_dim_data) <- pull(all_data[all_data$X4==b, 5])
     
     compute_dist <- as.matrix(
@@ -54,21 +56,23 @@ create_bip_clust_graph <- function(all_data, promoters_vec, rep_num, block_vec, 
     
     diag(compute_dist_bin) <- 0
     
-    compute_dist_bin_bip <- compute_dist_bin[block_promoters, , drop=FALSE]
+    #compute_dist_bin <- compute_dist_bin[block_promoters, , drop=FALSE]
+    lines <- !(1:nrow(compute_dist_bin) %in% block_promoters)
     
-    net <- graph_from_incidence_matrix(
+    compute_dist_bin[!(1:nrow(compute_dist_bin) %in% block_promoters), ] <- 0
+    # net <- graph_from_incidence_matrix(
+    #   compute_dist_bin
+    # )
+    
+    net_bip <- graph_from_incidence_matrix(
       compute_dist_bin
     )
     
-    net_bip <- graph_from_incidence_matrix(
-      compute_dist_bin_bip
-    )
-    
     net_bip <- simplify(net_bip, remove.multiple = FALSE, remove.loops = TRUE)
-    net <- simplify(net, remove.multiple = FALSE, remove.loops = TRUE)
+    # net <- simplify(net, remove.multiple = FALSE, remove.loops = TRUE)
     
     net_components_bip <- components(net_bip, mode = c("weak", "strong"))
-    net_components <- components(net, mode = c("weak", "strong"))
+    # net_components <- components(net, mode = c("weak", "strong"))
     #biggest_cluster <- which.max(net_components$csize)
     #net_comp2 <- clusters(net, mode="weak")
     plot_main_cluster <- which(net_components_bip$csize>1)
@@ -86,23 +90,20 @@ create_bip_clust_graph <- function(all_data, promoters_vec, rep_num, block_vec, 
     
     res[[length(res)+1]] <- list(
       "dist_bin" = compute_dist_bin,
-      "dist_bin_bip" = compute_dist_bin_bip,
       "net_to_plot" = net_to_plot,
       "membership_bip" = net_components_bip$membership,
-      "membership" = net_components$membership,
       "csize_bip" = net_components_bip$csize,
-      "csize" = net_components$csize,
       "no_bip" = net_components_bip$no,
-      "no" = net_components$no
+      "lines" = lines
     )
     
   }
   
-  res[[length(res)+1]] <- list(
-    "structure" = structure
-  )
+  # res[[length(res)+1]] <- list(
+  #   "structure" = structure
+  # )
   
-  names(res) <- c(str_c("clust_block", block), "clust_block")
+  names(res) <- str_c("clust_block", block)
   res
   
 }
