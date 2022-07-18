@@ -8,23 +8,6 @@
 #' @param point_1 
 #' @param point_2 
 
-structure_1_net_bip <- create_bip_clust_graph(structure_1, promoters_ids, 1, 1:16, 3)
-structure_2_net_bip <- create_bip_clust_graph(structure_2, promoters_ids, 2, 1:16, 3)
-
-promoters_ids[which(promoters_ids<341)]
-
-structure_1_net_bip$clust_block1$lines
-
-structure_1_net_bip$clust_block1$dist_bin
-structure_1_net_bip$clust_block1$membership_bip
-structure_1_net_bip$clust_block1$csize_bip
-structure_1_net_bip$clust_block1$no_bip
-
-structure_1_net_bip$clust_block1$lines
-
-structure_net_comp1 <- structure_1_net_bip
-structure_net_comp2 <- structure_2_net_bip
-
 edge_identity_overlap <- function(structure_net_comp1, structure_net_comp2){
   
   # On recupère les blocs à parcourir
@@ -33,7 +16,7 @@ edge_identity_overlap <- function(structure_net_comp1, structure_net_comp2){
   results = list()
   
   for (b in seq_len(n_block)){
-
+    
     dist_bin1 = as.matrix(structure_net_comp1[[b]]$dist_bin)
     dist_bin2 = as.matrix(structure_net_comp2[[b]]$dist_bin)
     chevauche_1_2 = matrix(
@@ -41,6 +24,7 @@ edge_identity_overlap <- function(structure_net_comp1, structure_net_comp2){
       structure_net_comp1[[b]]$no_bip,
       structure_net_comp2[[b]]$no_bip
     )
+    
     
     for (i in (1:structure_net_comp1[[b]]$no_bip)[structure_net_comp1[[b]]$csize_bip>1]){
       
@@ -78,7 +62,7 @@ edge_identity_overlap <- function(structure_net_comp1, structure_net_comp2){
           names(membership2[membership2==j])
         ]
         
-        chevauche_1_2[i,j] = sum(mat1&mat2)/sum(mat1|mat2)
+        chevauche_1_2[i,j] = sum(mat1&mat2, na.rm = TRUE)/sum(mat1|mat2, na.rm = TRUE)
       }
       
     }

@@ -38,6 +38,9 @@ create_bip_clust_graph <- function(all_data, promoters_vec, rep_num, block_vec, 
       )
     )
     
+    # 342 billes
+    # 13 lines  promoters (342 lignes : 342 - 13 lignes à 0)
+    # 342 colonnes
     compute_dist_bin <- sapply(
       compute_dist, 
       FUN = function(item) ifelse(item<=min_dist, 1, 0)
@@ -57,8 +60,7 @@ create_bip_clust_graph <- function(all_data, promoters_vec, rep_num, block_vec, 
     diag(compute_dist_bin) <- 0
     
     #compute_dist_bin <- compute_dist_bin[block_promoters, , drop=FALSE]
-    lines <- !(1:nrow(compute_dist_bin) %in% block_promoters)
-    
+
     compute_dist_bin[!(1:nrow(compute_dist_bin) %in% block_promoters), ] <- 0
     # net <- graph_from_incidence_matrix(
     #   compute_dist_bin
@@ -88,13 +90,13 @@ create_bip_clust_graph <- function(all_data, promoters_vec, rep_num, block_vec, 
     plot(net_to_plot, edge.arrow.size=.2,vertex.label=NA, main = paste0("Représenation graphique du block ", b, " pour le replicat ", rep_num))
     dev.off()
     
+
     res[[length(res)+1]] <- list(
       "dist_bin" = compute_dist_bin,
       "net_to_plot" = net_to_plot,
       "membership_bip" = net_components_bip$membership,
       "csize_bip" = net_components_bip$csize,
-      "no_bip" = net_components_bip$no,
-      "lines" = lines
+      "no_bip" = net_components_bip$no
     )
     
   }
