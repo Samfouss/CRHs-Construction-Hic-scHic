@@ -35,7 +35,7 @@ promoters = promoters(genesInRRCs)
 # On filtre les promoters qui ne sont pas sur le chroosome 11
 promotersChr11 = promoters[promoters@seqnames=="chr11"]
 
-# On a au total 6Mbases soit 6 000 0000 bases
+# On a au total 6Mbases soit 6 000 000 bases
 # Soit 2667 bases par bille. Pour chaque bille, on aura un range de longueur 2667
 # Création de IRganges
 polymers_range <- seq(from = (109000000-1), to = 115000000, by = 2667)

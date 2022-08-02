@@ -1,4 +1,169 @@
 
+###################### Function 1 ###################
+
+fusion_comp2 <- function(structure_net_comp1, structure_net_comp2, edge_overlap_result){
+  
+  #' @description Fusionne deux CRHs appariés dans des réplicats différents
+  #' @param structure_net_comp1 Composantes du réplicat 1 retournées par la fonction components
+  #' @param structure_net_comp2 Composantes du réplicat 2 retournées par la fonction components
+  #' @param dist_bin1 Matrice d'adjacence du réplicat 1
+  #' @param dist_bin2 Matrice d'adjacence du réplicat 2
+  #' @param edge_overlap_result On donne à la fonction fusion_comp les résulats retournés par la fonction edgeoverlap
+  
+  # On recupère les blocs à parcourir
+  n_block = length(structure_net_comp1)
+  # Initialisation de la liste à recevoir les résultats
+  results = list()
+  
+  for (b in seq_len(n_block)){
+    
+    crhs = list()
+    nb_crh1 = length(structure_net_comp1[[b]]$crhs)
+    nb_crh2 = length(structure_net_comp2[[b]]$crhs)
+    
+    paires.crh <- edge_overlap_result[[b]]$chev_edge_comp
+    
+    for (j in seq_len(ncol(paires.crh))) {
+      
+      # On récupère ici les lignes des éléments qui appartiennent au CRHs à fusionner dans le premier replica
+      ens1 = paires.crh[1, j]
+      # On récupère ici les lignes des éléments qui appartiennent au CRHs à fusionner dans le deuxième replica
+      ens2 = paires.crh[2, j]
+      
+      # Dans ens1 et ens2, on les noms des différents éléments des différents CRHs.
+      mat1 = structure_net_comp1[[b]]$crhs[[ens1]]$mat_incidence
+      mat2 = structure_net_comp2[[b]]$crhs[[ens2]]$mat_incidence
+      
+      rowmat = union(rownames(mat1), rownames(mat2))
+      colmat = union(colnames(mat1), colnames(mat2))
+      
+      mat_merge_1 <- matrix(
+        0,
+        ncol=length(colmat), 
+        nrow=length(rowmat), 
+        dimnames=list(rowmat, colmat)
+      )
+      mat_merge_2 <- mat_merge_1
+      
+      indxA <- outer(rowmat, colmat, FUN=paste) %in% outer(rownames(mat1), colnames(mat1), FUN=paste)
+      indxB <- outer(rowmat, colmat, FUN=paste) %in% outer(rownames(mat2), colnames(mat2), FUN=paste)
+      mat_merge_1[indxA] <- mat1
+      mat_merge_2[indxB] <- mat2
+      
+      # Ici les matrices mat_merge_1 et mat_merge_2 on les meme dimenssions avec les memes noms. Elles correspondent respectivement et exactement aux matrices adj_fusion et cc.list[[i]], juste qu'elles ont des dimenssions égales
+      # On peut donc à ce stade faire la somme des deux matrices
+      adj_fusion = mat_merge_1 + mat_merge_2
+      # Une fois la somme faite, il faut ramener les valeurs qui sont supérieures ou égales à 2 (seulement dans notre cas d'étude la valeur maximale est 2) à 1.
+      adj_fusion[adj_fusion>1] <- 1
+      
+      name1 = structure_net_comp1[[b]]$crhs[[ens1]]$name
+      name2 = structure_net_comp2[[b]]$crhs[[ens2]]$name
+      
+      crhs[[length(crhs)+1]] = list(
+        "name" = str_c(name1, " - ", name2),
+        "mat_incidence" = adj_fusion
+      )
+      
+    }
+    
+    # Une fois les CRHs fusionnés dans la boucle précédente, on doit juste à ce niveau ajouter ceux qui ne sont pas fusionnés avec leurs noms par la meme occasion
+    rest_add1 = 1:nb_crh1
+    rest_add1 = rest_add1[!rest_add1 %in% paires.crh[1, ]]
+    rest_add2 = 1:nb_crh2
+    rest_add2 = rest_add2[!rest_add2 %in% paires.crh[2, ]]
+    
+    for (i in rest_add1) {
+      crhs[[length(crhs)+1]] = list(
+        "name" = structure_net_comp1[[b]]$crhs[[i]]$name,
+        "mat_incidence" = structure_net_comp1[[b]]$crhs[[i]]$mat_incidence
+      )
+    }
+    
+    for (j in rest_add2) {
+      crhs[[length(crhs)+1]] = list(
+        "name" = structure_net_comp2[[b]]$crhs[[j]]$name,
+        "mat_incidence" = structure_net_comp2[[b]]$crhs[[j]]$mat_incidence
+      )
+    }
+    
+    names(crhs) <- str_c("crh", 1:length(crhs))
+    
+    # On a fini avec les CRHs individuellement, maintenant ce qui serait interessant de reconstituer toute la matrice d'incidence à partir des différents CRHs
+    
+    # - On commence par prendre la toute première matrice d'incidence
+    all_mat_incidence = crhs[[1]]$mat_incidence
+    resume = matrix(NA, nrow = length(crhs), ncol = 1)
+    resume[1, 1] <- crhs[[1]]$name
+
+    if(length(crhs)>1){
+      for (k in 2:length(crhs)) {
+        
+        resume[k, 1] <- crhs[[k]]$name
+        mat1 = all_mat_incidence
+        mat2 = crhs[[k]]$mat_incidence
+        
+        rowmat = union(rownames(mat1), rownames(mat2))
+        colmat = union(colnames(mat1), colnames(mat2))
+        
+        mat_merge_1 <- matrix(
+          0,
+          ncol=length(colmat), 
+          nrow=length(rowmat), 
+          dimnames=list(rowmat, colmat)
+        )
+        mat_merge_2 <- mat_merge_1
+        
+        indxA <- outer(rowmat, colmat, FUN=paste) %in% outer(rownames(mat1), colnames(mat1), FUN=paste)
+        indxB <- outer(rowmat, colmat, FUN=paste) %in% outer(rownames(mat2), colnames(mat2), FUN=paste)
+        mat_merge_1[indxA] <- mat1
+        mat_merge_2[indxB] <- mat2
+        
+        all_mat_incidence = mat_merge_1 + mat_merge_2
+        all_mat_incidence[all_mat_incidence>1] <- 1
+        
+      } 
+    }
+    
+    net_bip <- graph_from_incidence_matrix(
+      all_mat_incidence
+    )
+    net_components_bip <- components(net_bip, mode = c("weak", "strong"))
+    
+    plot_main_cluster <- which(net_components_bip$csize>1)
+    vert_ids <- V(net_bip)[net_components_bip$membership %in% plot_main_cluster]
+    net_to_plot <- induced_subgraph(net_bip, vert_ids)
+    V(net_to_plot)$color <- V(net_to_plot)$type
+    V(net_to_plot)$color=gsub("FALSE","red",V(net_to_plot)$color)
+    V(net_to_plot)$color=gsub("TRUE","lightblue",V(net_to_plot)$color)
+    
+    file_name = paste0("crhs_merge_block_", b, ".jpeg")
+    jpeg(file_name, width = 980, height = 680)
+    par(mar = c(1, 1, 1, 1))
+    plot(net_to_plot, edge.arrow.size=.2,vertex.label=NA, main = paste0("Représenation graphique du block ", b, " des CRHs fusionnés "))
+    dev.off()
+    
+    
+    results[[length(results)+1]] <- list(
+      "dist_bin" = all_mat_incidence,
+      "net_to_plot" = net_to_plot,
+      "membership_bip" = net_components_bip$membership,
+      "csize_bip" = net_components_bip$csize,
+      "no_bip" = net_components_bip$no,
+      "resume_fusion" = resume,
+      "crhs" = crhs
+    )
+    
+  }
+  
+  names(results) <- str_c("block", seq_len(n_block))
+  results
+  
+}
+
+
+
+###################### Function 2 ###################
+
 fusion_comp <- function(structure_net_comp1, structure_net_comp2, edge_overlap_result){
   
   #' @description Fusionne deux CRHs appariés dans des réplicats différents
@@ -44,15 +209,41 @@ fusion_comp <- function(structure_net_comp1, structure_net_comp2, edge_overlap_r
         ens1 = names(structure_net_comp1[[b]]$membership_bip)[structure_net_comp1[[b]]$membership_bip==paires.crh[1, j]]
         # On récupère ici les lignes des éléments qui appartiennent au CRHs à fusionner dans le deuxième replica
         ens2 = names(structure_net_comp2[[b]]$membership_bip)[structure_net_comp2[[b]]$membership_bip==paires.crh[2, j]]
-        noms = union(ens1,ens2)
-        # On crée une matrice où on doit mettre les valeurs de matrice bipartite des éléments ens1 et ens2. Cette matrice n'est rien d'autre que l'union des deux ensembles
-        adjcomp = matrix(0,length(noms),length(noms))
-        dimnames(adjcomp) = list(noms,noms)
         
-        adjcomp[ens1,ens1] = dist_bin1[ens1,ens1]
-        adjcomp[ens2,ens2] = adjcomp[ens2,ens2]|dist_bin2[ens2,ens2]
+        # Dans ens1 et ens2, on les noms des différents éléments des différents CRHs.
+        mat1 = dist_bin1[
+          rownames(dist_bin1) %in% ens1, 
+          colnames(dist_bin1) %in% ens1,
+          drop=FALSE
+        ]
+        mat2 = dist_bin2[
+          rownames(dist_bin2) %in% ens2, 
+          colnames(dist_bin2) %in% ens2,
+          drop=FALSE
+        ]
+        rowmat = union(rownames(mat1), rownames(mat2))
+        colmat = union(colnames(mat1), colnames(mat2))
         
-        cc.list[[length(cc.list)+1]] <- adjcomp
+        mat_merge_1 <- matrix(
+          0,
+          ncol=length(colmat), 
+          nrow=length(rowmat), 
+          dimnames=list(rowmat, colmat)
+        )
+        mat_merge_2 <- mat_merge_1
+        
+        indxA <- outer(rowmat, colmat, FUN=paste) %in% outer(rownames(mat1), colnames(mat1), FUN=paste)
+        indxB <- outer(rowmat, colmat, FUN=paste) %in% outer(rownames(mat2), colnames(mat2), FUN=paste)
+        mat_merge_1[indxA] <- mat1
+        mat_merge_2[indxB] <- mat2
+        
+        # Ici les matrices mat_merge_1 et mat_merge_2 on les meme dimenssions avec les memes noms. Elles correspondent respectivement et exactement aux matrices adj_fusion et cc.list[[i]], juste qu'elles ont des dimenssions égales
+        # On peut donc à ce stade faire la somme des deux matrices
+        adj_fusion = mat_merge_1 + mat_merge_2
+        # Une fois la somme faite, il faut ramener les valeurs qui sont supérieures ou égales à 2 (seulement dans notre cas d'étude la valeur maximale est 2) à 1.
+        adj_fusion[adj_fusion>1] <- 1
+        
+        cc.list[[length(cc.list)+1]] <- adj_fusion
         
       }
     }
@@ -68,17 +259,21 @@ fusion_comp <- function(structure_net_comp1, structure_net_comp2, edge_overlap_r
       # du réplicat 1
       for(i in (1:structure_net_comp1[[b]]$no_bip)[!(1:structure_net_comp1[[b]]$no_bip)%in%paires.crh[1, ] & structure_net_comp1[[b]]$csize_bip>1]){
         j = j+1
-        cc.list[[j]] = structure_net_comp1[[b]]$dist_bin[
-          names(structure_net_comp1[[b]]$membership_bip==i),
-          names(structure_net_comp1[[b]]$membership_bip==i)
+        ens = names(structure_net_comp1[[b]]$membership_bip==i)
+        cc.list[[j]] = dist_bin1[
+          rownames(dist_bin1) %in% ens, 
+          colnames(dist_bin1) %in% ens,
+          drop=FALSE
         ]
       }
       # du réplicat 2
       for(i in (1:structure_net_comp2[[b]]$no_bip)[!(1:structure_net_comp2[[b]]$no_bip)%in%paires.crh[2, ] & structure_net_comp2[[b]]$csize_bip>1]){
         j = j+1
-        cc.list[[j]] = structure_net_comp2[[b]]$dist_bin[
-          names(structure_net_comp2[[b]]$membership_bip==i),
-          names(structure_net_comp2[[b]]$membership_bip==i)
+        ens = names(structure_net_comp2[[b]]$membership_bip==i)
+        cc.list[[j]] = dist_bin2[
+          rownames(dist_bin2) %in% ens, 
+          colnames(dist_bin2) %in% ens,
+          drop=FALSE
         ]
       }
       
@@ -98,41 +293,6 @@ fusion_comp <- function(structure_net_comp1, structure_net_comp2, edge_overlap_r
       # }
       # rownames(adj_fusion) <- row_name
       # colnames(adj_fusion) <- col_name
-
-
-      # Création d'une nouvelle matrice d'adjacence à partir des noms des matrices, histoire qu'il n'y ait pas de répétitions
-      # 1 - On initialise la matrice adj_fusion avec la première matrice de cc.list
-      adj_fusion = cc.list[[1]]
-      
-      if (length(cc.list)>1){
-        for (i in 2:length(cc.list)){
-          # On initialise les matrice à fusionner dans mat1 et mat2
-          mat1 = adj_fusion
-          mat2 = cc.list[[i]]
-          rowmat = union(rownames(mat1), rownames(mat2))
-          colmat = union(colnames(mat1), colnames(mat2))
-          
-          mat_merge_1 <- matrix(
-            0,
-            ncol=length(colmat), 
-            nrow=length(rowmat), 
-            dimnames=list(rowmat, colmat)
-          )
-          mat_merge_2 <- mat_merge_1
-          
-          indxA <- outer(rowmat, colmat, FUN=paste) %in% outer(rownames(mat1), colnames(mat1), FUN=paste)
-          indxB <- outer(rowmat, colmat, FUN=paste) %in% outer(rownames(mat2), colnames(mat2), FUN=paste)
-          mat_merge_1[indxA] <- mat1
-          mat_merge_2[indxB] <- mat2
-          
-          # Ici les matrices mat_merge_1 et mat_merge_2 on les meme dimenssions avec les memes noms. Elles correspondent respectivement et exactement aux matrices adj_fusion et cc.list[[i]], juste qu'elles ont des dimenssions égales
-          # On peut donc à ce stade faire la somme des deux matrices
-          adj_fusion = mat_merge_1 + mat_merge_2
-          # Une fois la somme faite, il faut ramener les valeurs qui sont supérieures ou égales à 2 (seulement dans notre cas d'étude la valeur maximale est 2) à 1.
-          adj_fusion[adj_fusion>1] <- 1
-          
-        }
-      }
     }
     
     net_bip <- graph_from_incidence_matrix(
