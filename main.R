@@ -12,7 +12,6 @@ promoters_ids[which(promoters_ids<341)]
 table(structure_1[promoters_ids, ]$X4)
 table(structure_2[promoters_ids, ]$X4)
 table(structure_3[promoters_ids, ]$X4)
-table(structure_4[promoters_ids, ]$X4)
 
 ######################### Creation des CRHs #########################
 
@@ -32,6 +31,9 @@ fusion_essaie <- fusion_comp2(net1, net2, edgover)
 # - La deuxième valeure est le numero du CRHs dans le replica
 fusion_essaie$block1$resume_fusion
 
+edgover <- edge_identity_overlap2(net3, fusion_essaie)
+
+fusion_essaie <- fusion_comp2(net3, fusion_essaie, edgover)
 
 
 
@@ -42,7 +44,7 @@ fusion_essaie$block1$resume_fusion
 nb_replicas = length(unique(all_single_structure$replica))
 
 # Bien avant de rentrer dans la boucle, on initialise la matrice de fusion avec le cluster de la première structure
-all_net_result <- create_bip_clust_graph(
+all_net_result <- create_bip_clust_graph2(
   as_tibble(
     all_single_structure%>%
       filter(replica == sprintf("%03d", 1))%>%
@@ -57,6 +59,7 @@ all_net_result <- create_bip_clust_graph(
   3
 )
 
+nb_replicas = 50
 for (r in 2:nb_replicas) {
   structure <- as_tibble(
     all_single_structure%>%
@@ -67,20 +70,20 @@ for (r in 2:nb_replicas) {
       )
   )
   
-  print("1")
-  net <- create_bip_clust_graph(structure, promoters_ids, r, 1:16, 3)
+  print(r)
+  print("Cluster")
+  net <- create_bip_clust_graph2(structure, promoters_ids, r, 1:16, 3)
   
-  print("2")
-  overlap_edge <- edge_identity_overlap(
+  print("Overlap")
+  overlap_edge <- edge_identity_overlap2(
     net, 
     all_net_result
   )
   
-  print("3")
-  all_net_result <- fusion_comp(net, all_net_result, overlap_edge)
+  print("Fusion")
+  all_net_result <- fusion_comp2(net, all_net_result, overlap_edge)
   
 }
-
 
 
 
