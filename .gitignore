@@ -6,4 +6,5 @@ RAPPORT_*
 SHARE_FOLDER.Rproj
 ignoreCodes.R
 Notes.txt
+rdata/fusion_*
 .gitignore

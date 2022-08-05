@@ -22,18 +22,12 @@ net2 <- create_bip_clust_graph2(structure_2, promoters_ids, 2, 1:16, 3)
 net3 <- create_bip_clust_graph2(structure_3, promoters_ids, 3, 1:16, 3)
 
 edgover <- edge_identity_overlap2(net1, net2)
-
 fusion_essaie <- fusion_comp2(net1, net2, edgover)
 
-# On a ici le résumé des fusions
-# Chaque ligne correspond aux CRHs fusionnés et non fusionnés
-# - La première valeure est le numero du replica
-# - La deuxième valeure est le numero du CRHs dans le replica
-fusion_essaie$block1$resume_fusion
-
 edgover <- edge_identity_overlap2(net3, fusion_essaie)
-
 fusion_essaie <- fusion_comp2(net3, fusion_essaie, edgover)
+
+fusion_essaie$block1$resume_fusion
 
 
 
@@ -54,7 +48,7 @@ all_net_result <- create_bip_clust_graph2(
       )
   ),
   promoters_ids, 
-  3, 
+  1, 
   1:16, 
   3
 )
@@ -83,8 +77,17 @@ for (r in 2:nb_replicas) {
   print("Fusion")
   all_net_result <- fusion_comp2(net, all_net_result, overlap_edge)
   
+  print(all_net_result$block1$resume_fusion)
+  
 }
 
 
+library(openxlsx)
+write.xlsx(
+  data.frame(
+    resume_bloc1 = all_net_result$block1$resume_fusion
+  ), 
+  file = "rdata/fusion_50_replicas.xlsx"
+)
 
 

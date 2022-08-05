@@ -31,8 +31,6 @@ fusion_comp2 <- function(structure_net_comp1, structure_net_comp2, edge_overlap_
     # On boucle sur les CRHs à apparier
     if(sum(structure_net_comp1[[b]]$crhs[[1]]$mat_incidence)!=-1 & sum(structure_net_comp2[[b]]$crhs[[1]]$mat_incidence)!=-1){
       
-      print("1")
-
       for (j in seq_len(ncol(paires.crh))) {
         
         # On récupère ici les lignes des éléments qui appartiennent au CRHs à fusionner dans le premier replica
@@ -98,12 +96,10 @@ fusion_comp2 <- function(structure_net_comp1, structure_net_comp2, edge_overlap_
       
     }else if(sum(structure_net_comp1[[b]]$crhs[[1]]$mat_incidence)==-1){
       
-      print("2")
       crhs = structure_net_comp2[[b]]$crhs
       
     }else if(sum(structure_net_comp2[[b]]$crhs[[1]]$mat_incidence)==-1){
       
-      print("3")
       crhs = structure_net_comp1[[b]]$crhs
       
     }
@@ -114,10 +110,9 @@ fusion_comp2 <- function(structure_net_comp1, structure_net_comp2, edge_overlap_
     
     # - On commence par prendre la toute première matrice d'incidence
     # all_mat_incidence = crhs[[1]]$mat_incidence
-    print(length(crhs[[1]]$name))
     resume = matrix(NA, nrow = length(crhs), ncol = 1)
     resume[1, 1] <- crhs[[1]]$name
-    
+
     if(length(crhs)>1){
       for (k in 2:length(crhs)) {
         
