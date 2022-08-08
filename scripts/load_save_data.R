@@ -19,6 +19,7 @@ load("rdata/promoters_ids.rda")
 # structure_data contient 250 éléments. Chaque élément contient une paire de structure (paire matchée dans le dossier data/pairs sur gitHub)
 #load("rdata/structure_data.rda")
 load("rdata/all_single_structure.rda")
+load("rdata/all_paired_structure.rda")
 
 structure_1 <- as_tibble(
   all_single_structure%>%
@@ -37,7 +38,6 @@ structure_2 <- as_tibble(
     ID = paste0("B", sprintf("%02d", X4), sprintf("%04d", 1:n()))
   )
 )
-
 
 structure_3 <- as_tibble(
   all_single_structure%>%

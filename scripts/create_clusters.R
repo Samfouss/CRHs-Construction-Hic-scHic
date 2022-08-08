@@ -2,7 +2,7 @@
 
 
 ################# function 2 ##################
-create_bip_clust_graph2 <- function(all_data, promoters_vec, rep_num, block_vec, min_dist = 3){
+create_bip_clust_graph2 <- function(all_data, promoters_vec, rep_num, block_vec, min_dist = 3, cell_number){
   
   par_default <- par(bty = 'n')
   res = list()
@@ -100,7 +100,7 @@ create_bip_clust_graph2 <- function(all_data, promoters_vec, rep_num, block_vec,
         ]
         
         crhs[[length(crhs)+1]] = list(
-          "name" = str_c("( ", rep_num, ", ", i, " )"),
+          "name" = str_c("( ", cell_number, "|", rep_num, ", ", i, " )"),
           "mat_incidence" = mat_bin
         )
         
@@ -124,7 +124,7 @@ create_bip_clust_graph2 <- function(all_data, promoters_vec, rep_num, block_vec,
       }else{
         
         crhs[[length(crhs)+1]] = list(
-          "name" = str_c("( ", rep_num, ", ", i, " )"),
+          "name" = str_c("( ", cell_number, "|", rep_num, ", ", i, " )"),
           "mat_incidence" = -1
         )
         
@@ -146,7 +146,7 @@ create_bip_clust_graph2 <- function(all_data, promoters_vec, rep_num, block_vec,
       
       crhs = list()
       crhs[[length(crhs)+1]] = list(
-        "name" = str_c("( ", rep_num, ", ", i, " )"),
+        "name" = str_c("( ", cell_number, "|", rep_num, ", ", i, " )"),
         "mat_incidence" = -1
       )
       

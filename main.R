@@ -15,71 +15,66 @@ table(structure_3[promoters_ids, ]$X4)
 
 ######################### Creation des CRHs #########################
 
-# Test de fusion de trois replicats
-
-net1 <- create_bip_clust_graph2(structure_1, promoters_ids, 1, 1:16, 3)
-net2 <- create_bip_clust_graph2(structure_2, promoters_ids, 2, 1:16, 3)
-net3 <- create_bip_clust_graph2(structure_3, promoters_ids, 3, 1:16, 3)
-
-edgover <- edge_identity_overlap2(net1, net2)
-fusion_essaie <- fusion_comp2(net1, net2, edgover)
-
-edgover <- edge_identity_overlap2(net3, fusion_essaie)
-fusion_essaie <- fusion_comp2(net3, fusion_essaie, edgover)
-
-fusion_essaie$block1$resume_fusion
-
-
-
-
-
-
 # On récupère ici le nombre de réplicat
-nb_replicas = length(unique(all_single_structure$replica))
+nb_replicas = length(unique(all_paired_structure$paire))
 
-# Bien avant de rentrer dans la boucle, on initialise la matrice de fusion avec le cluster de la première structure
-all_net_result <- create_bip_clust_graph2(
-  as_tibble(
-    all_single_structure%>%
-      filter(replica == sprintf("%03d", 1))%>%
-      select(-c(ends_with("_c"), "replica"))%>%
-      mutate(
-        ID = paste0("B", sprintf("%02d", X4), sprintf("%04d", 1:n()))
-      )
-  ),
-  promoters_ids, 
-  1, 
-  1:16, 
-  3
-)
-
-nb_replicas = 50
-for (r in 2:nb_replicas) {
-  structure <- as_tibble(
-    all_single_structure%>%
-      filter(replica == sprintf("%03d", r))%>%
-      select(-c(ends_with("_c"), "replica"))%>%
-      mutate(
-        ID = paste0("B", sprintf("%02d", X4), sprintf("%04d", 1:n()))
-      )
-  )
+# La boucle ira de 1 à 500
+#nb_replicas = 50
+for (r in 1:nb_replicas) {
   
   print(r)
-  print("Cluster")
-  net <- create_bip_clust_graph2(structure, promoters_ids, r, 1:16, 3)
+  cell = r%/%2 + 1
+  chr = 1
+  if(r%%2==0){
+    chr = 2
+    cell = r/2
+  }
   
-  print("Overlap")
-  overlap_edge <- edge_identity_overlap2(
-    net, 
-    all_net_result
-  )
-  
-  print("Fusion")
-  all_net_result <- fusion_comp2(net, all_net_result, overlap_edge)
-  
-  print(all_net_result$block1$resume_fusion)
+  # Initialisation du premier cluster
+  if(r==1){
+    all_net_result <- create_bip_clust_graph2(
+      as_tibble(
+        all_paired_structure%>%
+          filter(paire == str_c(chr, sprintf("%03d", cell)))%>%
+          select(-c(ends_with("_c"), "paire"))%>%
+          mutate(
+            ID = paste0("B", sprintf("%02d", X4), sprintf("%04d", 1:n()))
+          )
+      ),
+      promoters_ids, 
+      chr, 
+      1:16, 
+      3,
+      sprintf("%03d", cell)
+    )
+  }else{
+    
+    structure <- as_tibble(
+      all_paired_structure%>%
+        filter(paire == str_c(chr, sprintf("%03d", cell)))%>%
+        select(-c(ends_with("_c"), "paire"))%>%
+        mutate(
+          ID = paste0("B", sprintf("%02d", X4), sprintf("%04d", 1:n()))
+        )
+    )
+    
+    print("Cluster")
+    net <- create_bip_clust_graph2(structure, promoters_ids, chr, 1:16, 3, sprintf("%03d", cell))
+    
+    print("Overlap")
+    overlap_edge <- edge_identity_overlap2(
+      net, 
+      all_net_result
+    )
+    
+    print("Fusion")
+    all_net_result <- fusion_comp2(net, all_net_result, overlap_edge)
+    
+  }
   
 }
+
+print(all_net_result$block1$resume_fusion)
 
 
 library(openxlsx)
@@ -87,7 +82,7 @@ write.xlsx(
   data.frame(
     resume_bloc1 = all_net_result$block1$resume_fusion
   ), 
-  file = "rdata/fusion_50_replicas.xlsx"
+  file = "rdata/fusion_250_paires_block_1.xlsx"
 )
 
 

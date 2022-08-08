@@ -7,4 +7,5 @@ SHARE_FOLDER.Rproj
 ignoreCodes.R
 Notes.txt
 rdata/fusion_*
+SC_HIC_NAME.xlsx
 .gitignore
