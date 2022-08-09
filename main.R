@@ -76,6 +76,8 @@ for (r in 1:nb_replicas) {
 
 print(all_net_result$block1$resume_fusion)
 
+# Sauve les données dans l'objet suivant
+save(all_net_result, file = "rdata/all_net_result.rda")
 
 library(openxlsx)
 write.xlsx(

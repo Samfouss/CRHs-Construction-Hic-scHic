@@ -8,4 +8,7 @@ ignoreCodes.R
 Notes.txt
 rdata/fusion_*
 SC_HIC_NAME.xlsx
+rdata/all_net_result.rda
+rdata/cells_matrix.rda
+rdata/chrs_count.xlsx
 .gitignore
