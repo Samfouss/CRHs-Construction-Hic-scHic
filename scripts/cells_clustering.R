@@ -2,7 +2,7 @@
 library("FactoMineR")
 library("factoextra")
 
-cells_data <- cells_matrix
+cells_data <- t(cells_matrix)
 cells_data[cells_data == 1] <- "in"
 cells_data[cells_data == 0] <- "Not in"
 
