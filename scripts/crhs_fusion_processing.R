@@ -1,6 +1,9 @@
 library(ggplot2)
+library(tidyverse)
 
-# On efface tout ce qui est espaces, parenthèses, tirets puis on retient juste le premier nombre de chaque couple dans les résultats
+load("rdata/all_net_result.rda")
+
+
 result <- all_net_result$block1$resume_fusion%>%
   str_split("-", simplify = TRUE)
 
@@ -32,13 +35,6 @@ for (r in 2:nrow(result)) {
 }
 
 result_df <- data.frame(result_df)
-
-ggplot(
-  data.frame(table(result_df[, 1]))%>%
-    mutate(Var1 = as.numeric(Var1))%>%
-    mutate(Var1 = as.character(Var1))
-  )+
-  geom_bar(mapping = aes(x = Var1, y = Freq), stat = "identity")
 
 
 

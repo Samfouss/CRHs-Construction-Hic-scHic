@@ -50,6 +50,56 @@ for (j in 1:250) {
   )
 }
 
+for (j in 1:250) {
+  data_url = paste0("https://raw.githubusercontent.com/fmusella/In-silico_Hi-C_GAM_SPRITE/main/data/pairs/pair_", j, ".txt")
+  data_name = paste("structure_", j, sep="")
+  
+  folder = str_c("cell_", sprintf("%03d", j))
+  paire_1 = read_table(data_url, col_names = FALSE)%>%
+    select(c("X1", "X2", "X3", "X4"))
+  
+  paire_2 = read_table(data_url, col_names = FALSE)%>%
+    select(c("X5", "X6", "X7", "X8"))%>%
+    rename(X1 = X5, X2 = X6, X3 = X7, X4 = X8)
+  
+  if(file.exists(str_c("rdata/", folder))){
+    
+    write.table(
+      x = paire_1, 
+      file = str_c("rdata/", folder, "/paire_1.txt"), 
+      fileEncoding = "UTF-8",
+      col.names=FALSE,
+      row.names=FALSE
+    )
+    write.table(
+      x = paire_2, 
+      file = str_c("rdata/", folder, "/paire_2.txt"), 
+      fileEncoding = "UTF-8",
+      col.names=FALSE,
+      row.names=FALSE
+    )
+    
+  }else{
+    
+    dir.create(str_c("rdata/", folder))
+    write.table(
+      x = paire_1, 
+      file = str_c("rdata/", folder, "/paire_1.txt"), 
+      fileEncoding = "UTF-8",
+      col.names=FALSE,
+      row.names=FALSE
+    )
+    write.table(
+      x = paire_2, 
+      file = str_c("rdata/", folder, "/paire_2.txt"), 
+      fileEncoding = "UTF-8",
+      col.names=FALSE,
+      row.names=FALSE
+    )
+  }
+  
+}
+
 # On sauve les bases de données afin de ne plus avoir à les retelecharger
 save(all_paired_structure, file = "rdata/all_paired_structure.rda")
 save(all_single_structure, file = "rdata/all_single_structure.rda")

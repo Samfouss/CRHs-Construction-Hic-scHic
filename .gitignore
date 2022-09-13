@@ -12,3 +12,5 @@ rdata/all_net_result.rda
 rdata/cells_matrix.rda
 rdata/chrs_count.xlsx
 .gitignore
+rapportClustering*
+Clustering_*
