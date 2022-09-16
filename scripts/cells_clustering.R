@@ -25,3 +25,4 @@ fviz_dend(hcpc_cluster, cex = 0.7, palette = "jco", rect = TRUE, rect_fill = TRU
 fviz_cluster(hcpc_cluster, repel = TRUE, geom = "point", main = "Classification des cellules")
 table(hcpc_cluster$data.clust$clust)
 hcpc_cluster$call$t
+
