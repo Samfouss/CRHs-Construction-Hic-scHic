@@ -1,12 +1,23 @@
 # Chargement de packages
+library("tidyverse")
 library("FactoMineR")
 library("factoextra")
+library("ggpubr")
 
-cells_data <- t(cells_matrix)
+load("rdata/cells_matrix.rda")
+cells_data <- cells_matrix[[1]]
+for (b in 2:16) {
+  cells_data <- cbind(
+    cells_data,
+    cells_matrix[[b]] 
+  )
+}
+
+#cells_data <- t(cells_matrix)
 cells_data[cells_data == 1] <- "in"
 cells_data[cells_data == 0] <- "Not in"
 
-cells_data <- data.frame(cells_data)
+#cells_data <- data.frame(cells_data)
 
 res.mca <- MCA(cells_data, graph = FALSE)
 print(res.mca)
@@ -25,4 +36,5 @@ fviz_dend(hcpc_cluster, cex = 0.7, palette = "jco", rect = TRUE, rect_fill = TRU
 fviz_cluster(hcpc_cluster, repel = TRUE, geom = "point", main = "Classification des cellules")
 table(hcpc_cluster$data.clust$clust)
 hcpc_cluster$call$t
+
 

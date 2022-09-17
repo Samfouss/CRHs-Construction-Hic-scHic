@@ -36,14 +36,3 @@ for (r in 2:nrow(result)) {
 
 result_df <- data.frame(result_df)
 
-
-
-
-
-
-
-
-
-
-
-
