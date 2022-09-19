@@ -3,6 +3,7 @@ CRHs_compte_clusters = function(cel,clusters)
 {
   length(unique(clusters[cel=="in"]))
 }
+# Fonction pour calculer le nombre de clusters dans lequel se retrouve un CRH présent dans au moins tm cellules 
 CRHs_compte_clusters_tm = function(cel,clusters,tm)
 {
   sum(table(clusters[cel=="in"])>=tm)
@@ -22,6 +23,7 @@ table(nclusters_CRHs)
 nclusters_CRHst5 = apply(cells_data,2,CRHs_compte_clusters_tm,clusters=hcpc_cluster$data.clust$clust,tm=5)
 table(nclusters_CRHst5)
 summary(nclusters_CRHst5[nclusters_CRHst5>0])
+sum(nclusters_CRHst5>0)
 
 # Nombre de CRHs différents par cluster
 ncl = nlevels(hcpc_cluster$data.clust$clust)
