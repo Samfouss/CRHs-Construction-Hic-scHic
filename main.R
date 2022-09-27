@@ -79,12 +79,12 @@ print(all_net_result$block1$resume_fusion)
 # Sauve les données dans l'objet suivant
 save(all_net_result, file = "rdata/all_net_result.rda")
 
-library(openxlsx)
-write.xlsx(
-  data.frame(
-    resume_bloc1 = all_net_result$block1$resume_fusion
-  ), 
-  file = "rdata/fusion_250_paires_block_1.xlsx"
-)
+# library(openxlsx)
+# write.xlsx(
+#   data.frame(
+#     resume_bloc1 = all_net_result$block1$resume_fusion
+#   ), 
+#   file = "rdata/fusion_250_paires_block_1.xlsx"
+# )
 
 
