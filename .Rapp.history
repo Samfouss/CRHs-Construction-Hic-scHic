@@ -1,0 +1,4 @@
+load("rdata/all_net_result.rda")
+length(all_net_result[[i]]$resume_fusion)
+i=1
+length(all_net_result[[i]]$resume_fusion)

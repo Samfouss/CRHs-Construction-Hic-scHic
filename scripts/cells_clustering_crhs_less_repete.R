@@ -46,13 +46,13 @@ dim(cells_data)
 cells_data[cells_data == 1] <- "in"
 cells_data[cells_data == 0] <- "Not in"
 
-res.mca <- MCA(cells_data, graph = FALSE)
+res.mca <- MCA(cells_data, ncp=249, graph = FALSE)
 eig.val <- get_eigenvalue(res.mca)
 fviz_mca_ind(res.mca, col.ind = "cos2", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), repel = TRUE, ggtheme = theme_minimal())
 which(res.mca$eig[, 3, drop = FALSE]>=70)[1:5]
 
 res.mca_ <- MCA(cells_data, ncp = 82, graph = FALSE)
-hcpc_cluster <- HCPC(res.mca_, kk=Inf, min = nb_class_min, max = nb_class_max, graph = FALSE)
+hcpc_cluster <- HCPC(res.mca, kk=Inf, min = nb_class_min, max = nb_class_max, graph = FALSE)
 fviz_cluster(hcpc_cluster, repel = TRUE, geom = "point", main = "Classification après avoir retirer les CRHs qu'on \n ne retrouve que dans deux cellules")
 
 # Construction de clustering en retirant les CRHs qui ne se retrouvent que dans 3 cellules
@@ -63,13 +63,13 @@ dim(cells_data)
 cells_data[cells_data == 1] <- "in"
 cells_data[cells_data == 0] <- "Not in"
 
-res.mca <- MCA(cells_data, graph = FALSE)
+res.mca <- MCA(cells_data, ncp=249, graph = FALSE)
 eig.val <- get_eigenvalue(res.mca)
 fviz_mca_ind(res.mca, col.ind = "cos2", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), repel = TRUE, ggtheme = theme_minimal())
 which(res.mca$eig[, 3, drop = FALSE]>=70)[1:5]
 
 res.mca_ <- MCA(cells_data, ncp = 82, graph = FALSE)
-hcpc_cluster <- HCPC(res.mca_, kk=Inf, min = nb_class_min, max = nb_class_max, graph = FALSE)
+hcpc_cluster <- HCPC(res.mca, kk=Inf, min = nb_class_min, max = nb_class_max, graph = FALSE)
 fviz_cluster(hcpc_cluster, repel = TRUE, geom = "point", main = "Classification après avoir retirer les CRHs qu'on \n ne retrouve que dans trois cellules")
 
 # Construction de clustering en retirant les CRHs qui ne se retrouvent que dans 4 cellules
@@ -80,13 +80,13 @@ dim(cells_data)
 cells_data[cells_data == 1] <- "in"
 cells_data[cells_data == 0] <- "Not in"
 
-res.mca <- MCA(cells_data, graph = FALSE)
+res.mca <- MCA(cells_data,  ncp=249, graph = FALSE)
 eig.val <- get_eigenvalue(res.mca)
 fviz_mca_ind(res.mca, col.ind = "cos2", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), repel = TRUE, ggtheme = theme_minimal())
 which(res.mca$eig[, 3, drop = FALSE]>=70)[1:5]
 
 res.mca_ <- MCA(cells_data, ncp = 82, graph = FALSE)
-hcpc_cluster <- HCPC(res.mca_, kk=Inf, min = nb_class_min, max = nb_class_max, graph = FALSE)
+hcpc_cluster <- HCPC(res.mca, kk=Inf, min = nb_class_min, max = nb_class_max, graph = FALSE)
 fviz_cluster(hcpc_cluster, repel = TRUE, geom = "point", main = "Classification après avoir retirer les CRHs qu'on \n ne retrouve que dans quatre cellule")
 
 # Construction de clustering en retirant les CRHs qui ne se retrouvent que dans 5 cellules
