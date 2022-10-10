@@ -1,8 +1,8 @@
 # Exécution des scripts nécéssaires
 source("./scripts/load_save_data.R")
-source("./scripts/create_clusters.R")
-source("./scripts/chevauche_CRHs_fn.R")
-source("./scripts/fusionne_replicats_fn.R")
+source("./scripts/crhs_creation_with_bins/create_clusters.R")
+source("./scripts/crhs_creation_with_bins/chevauche_CRHs_fn.R")
+source("./scripts/crhs_creation_with_bins/fusionne_replicats_fn.R")
 
 # On peut voir que dans tous blocks, à des proportions différentes, on y trouve au moins un promoter
 sort(unique(structure_1[promoters_ids, ]$X4))
