@@ -56,27 +56,26 @@ for (r in 1:nb_replicas) {
 }
 
 # Nombre de contact trouvé dans la matrice d'incidence
-sum(compute_dist_bin1)/2
+sum(compute_dist_bin1)
 # La matrice est bien symétrique
 isSymmetric(compute_dist_bin1)
 
-# Le nombre de contacts dans la matrice simulée
-matrix_sum = rep(0, 10)
-for (i in 1:10) {
-  
-  matrix_sum[i] = sum(
-    read.table(paste0("Sc_Cell_In-silico_Hi-C/hic_mat_", sprintf("%03d", i), ".txt"), quote="\"", comment.char="", stringsAsFactors = FALSE)
-  )
-  
-}
+# Sauvegarde le fichier crée
+save(compute_dist_bin1, file = "rdata/compute_dist_bin1_cell1.rda")
 
 # La proportion du nombre de contact recupéré
-2706/sum(compute_dist_bin1)
+2706/(sum(compute_dist_bin1)*2)
 
 
+# Le nombre de contacts dans les 50 matrices simulées
+matrix_sum_scenario0 = rep(0, 50)
+for (i in 1:50) {
+  matrix_sum_scenario0[i] = sum(
+    read.table(paste0("Sc_Cell_In-silico_Hi-C/scenario0/hic_mat_", sprintf("%03d", i), ".txt"), quote="\"", comment.char="", stringsAsFactors = FALSE)
+  )
+}
 
+summary(matrix_sum_scenario0)
 
-
-
-
+summary(matrix_sum_scenario0/(16738*2))
 

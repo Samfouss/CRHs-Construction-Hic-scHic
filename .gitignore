@@ -1,8 +1,8 @@
 .Rproj.user
 .RData
 .Rhistory
-rapport.Rmd
 RAPPORT_*
+rapport*
 SHARE_FOLDER.Rproj
 ignoreCodes.R
 Notes.txt
@@ -16,3 +16,5 @@ rapportClustering*
 Clustering_*
 EnhancerPredictions*
 find_paires*
+rdata/SCORE_ABC_RESULTS/*
+rdata/SCORE_ABC_RESULTS/

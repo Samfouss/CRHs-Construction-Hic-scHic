@@ -48,4 +48,3 @@ structure_3 <- as_tibble(
   )
 )
 
-
