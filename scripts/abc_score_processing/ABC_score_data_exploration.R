@@ -2,10 +2,10 @@ library(tidyverse)
 library(data.table)
 library(vroom)
 
-endo_cell_data <- read_tsv("rdata/SCORE_ABC_RESULTS/ENDO_CELL/EnhancerPredictions.txt", show_col_types = FALSE)
-
 # To charge large dataset
-endo_cell_data_ <- fread("rdata/SCORE_ABC_RESULTS/ENDO_CELL/EnhancerPredictionsAllPutative.txt")
+endo_cell_data <- fread("rdata/SCORE_ABC_RESULTS/ENDO_CELL/EnhancerPredictionsAllPutative.txt")
+
+# endo_cell_data <- read_tsv("rdata/SCORE_ABC_RESULTS/ENDO_CELL/EnhancerPredictions.txt", show_col_types = FALSE)
 
 # endo_cell_data_ <- vroom("rdata/SCORE_ABC_RESULTS/ENDO_CELL/EnhancerPredictionsAllPutative.txt", delim = "\t")
 
@@ -20,12 +20,14 @@ contact_G_H_dist <- matrix(
 )
 
 for (i in seq_len(length(seuils))) {
-  contact_G_H_dist[i, 1] <- seuils[i]
-  contact_G_H_dist[i, 2] <- table(endo_cell_data$ABC.Score>seuils[i])[1]
-  contact_G_H_dist[i, 3] <- table(endo_cell_data$ABC.Score>seuils[i])[2]
+  
+  s = seuils[i]
+  contact_G_H_dist[i, 1] <- s
+  contact_G_H_dist[i, 2] <- table(endo_cell_data$ABC.Score>s)[1]
+  contact_G_H_dist[i, 3] <- table(endo_cell_data$ABC.Score>s)[2]
   
   summarise <- data.frame(
-    table(endo_cell_data%>%filter(ABC.Score>seuils[i])%>%select(TargetGene))
+    table(endo_cell_data%>%filter(ABC.Score>s)%>%select(TargetGene))
   )%>%
     summarise(
       min_TarGene = min(Freq, na.rm = TRUE),

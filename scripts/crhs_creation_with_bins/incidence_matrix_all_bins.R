@@ -18,7 +18,8 @@ for (r in 1:nb_replicas) {
     select(-c(ends_with("_c"), "paire"))%>%
     mutate(
       ID = paste0("B", sprintf("%02d", X4), sprintf("%04d", 1:n()))
-    )
+    )%>%
+    filter(X4 != 1)
   
   three_dim_data <- data[, 1:3]
   mat_row_name = data[, 5]
@@ -61,7 +62,7 @@ sum(compute_dist_bin1)
 isSymmetric(compute_dist_bin1)
 
 # Sauvegarde le fichier crée
-save(compute_dist_bin1, file = "rdata/compute_dist_bin1_cell1.rda")
+save(compute_dist_bin1, file = "rdata/compute_dist_bin1_cell1_.rda")
 
 # La proportion du nombre de contact recupéré
 2706/(sum(compute_dist_bin1)*2)
