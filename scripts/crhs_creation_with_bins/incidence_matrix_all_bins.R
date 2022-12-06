@@ -66,7 +66,7 @@ save(compute_dist_bin1, file = "rdata/compute_dist_bin1_cell1_.rda")
 
 load("rdata/compute_dist_bin1_cell1_.rda")
 
-stat <- apply(compute_dist_bin1, 1, sum)
+# stat <- apply(compute_dist_bin1, 1, sum)
 
 # La proportion du nombre de contact recupéré
 2706/(sum(compute_dist_bin1)*2)
@@ -87,6 +87,7 @@ summary(matrix_sum_scenario0/(16738*2))
 
 ######################################## compute incidence matrix per bac
 
+# 
 incidence_matrice_fn <- function(structure, beads_to_bins){
   beads_number = nrow(structure)
   bins_number = beads_number%/%beads_to_bins
@@ -97,7 +98,7 @@ incidence_matrice_fn <- function(structure, beads_to_bins){
     ncol = bins_number, 
     byrow = TRUE
   )
-  structure$ID <- paste0("B", sprintf("%02d", structure$V4), sprintf("%04d", 1:beads_number))
+  structure$ID <- paste0("B", sprintf("%02d", structure$X4), sprintf("%04d", 1:beads_number))
   
   if(beads_number%%beads_to_bins==0){
     
@@ -176,10 +177,12 @@ incidence_matrice_fn <- function(structure, beads_to_bins){
 }
 
 
+mat1 <- incidence_matrice_fn(structure_1, 4)
+mat2 <- incidence_matrice_fn(structure_2, 4)
+mat3 <- incidence_matrice_fn(structure_3, 4)
+mat4 <- incidence_matrice_fn(structure_4, 4)
 
-
-
-
+# Ce que je fais de différent ici est de prendre bille par bille de chaque bac afin de voir s'ils sont à une distance inférieure à 3 ou pas
 incidence_matrice_fn2 <- function(structure, beads_to_bins){
   beads_number = nrow(structure)
   bins_number = beads_number%/%beads_to_bins
@@ -229,43 +232,6 @@ incidence_matrice_fn2 <- function(structure, beads_to_bins){
     print("le nombre de bacs n'est pas divisible avec le nombre de billes !")
   }
 }
-
-
-mat <- incidence_matrice_fn(structure, 4)
-
-mat <- incidence_matrice_fn1(data, 4)
-
-for (i in 1:10) {
-  data <- read.table(paste0("hic_mat_", sprintf("%03d", i), ".txt"), quote="\"", comment.char="", stringsAsFactors = FALSE)
-  print(max(data))
-  print(sum(data))
-  print(dim(data))
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
