@@ -35,7 +35,10 @@ for (r in 1:nb_replicas) {
     all_net_result <- create_bip_clust_graph2(
       as_tibble(
         all_paired_structure%>%
-          filter(paire == str_c(chr, sprintf("%03d", cell)))%>%
+          filter(
+            paire == str_c(chr, sprintf("%03d", cell)),
+            X4 != 1
+          )%>%
           select(-c(ends_with("_c"), "paire"))%>%
           mutate(
             ID = paste0("B", sprintf("%02d", X4), sprintf("%04d", 1:n()))
