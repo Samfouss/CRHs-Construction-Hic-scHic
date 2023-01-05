@@ -20,6 +20,7 @@ nb_replicas = length(unique(all_paired_structure$paire))
 
 # La boucle ira de 1 à 500
 #nb_replicas = 50
+
 for (r in 1:nb_replicas) {
   
   print(r)

@@ -45,13 +45,26 @@ create_bip_clust_graph2 <- function(all_data, promoters_vec, rep_num, block_vec,
         FUN = function(item) ifelse(item<=min_dist, 1, 0)
       )
       
-      compute_dist_bin <- matrix(
-        compute_dist_bin, 
-        nrow = nrow(compute_dist), 
-        ncol = ncol(compute_dist), 
-        byrow = TRUE,
-        dimnames = list(mat_row_name, mat_row_name)
-      )
+      
+      if(b == 1){
+        # Si on est au niveau du block 1, on fixe la matrice d'incidence à 0
+        compute_dist_bin <- matrix(
+          0, 
+          nrow = nrow(compute_dist), 
+          ncol = ncol(compute_dist), 
+          byrow = TRUE,
+          dimnames = list(mat_row_name, mat_row_name)
+        ) 
+      }else{
+        # Si on est pas au block 1, on peut passer avec les contacts
+        compute_dist_bin <- matrix(
+          compute_dist_bin, 
+          nrow = nrow(compute_dist), 
+          ncol = ncol(compute_dist), 
+          byrow = TRUE,
+          dimnames = list(mat_row_name, mat_row_name)
+        )
+      }
       
       diag(compute_dist_bin) <- 0
       
@@ -141,7 +154,6 @@ create_bip_clust_graph2 <- function(all_data, promoters_vec, rep_num, block_vec,
         
       }
       
-      
     }else{
       
       crhs = list()
@@ -172,6 +184,4 @@ create_bip_clust_graph2 <- function(all_data, promoters_vec, rep_num, block_vec,
   res
   
 }
-
-
 

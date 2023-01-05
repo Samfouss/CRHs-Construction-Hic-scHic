@@ -33,12 +33,13 @@ for (i in seq_len(ncells)) {
 rm("mat")
 
 
+scHic = hicImpute_data[, 1:50]
 # HicImpute
 MCMCImpute_result=MCMCImpute(
-  scHiC=hicImpute_data,
-  bulk=apply(hicImpute_data,1,sum),
+  scHiC=scHic,
+  bulk=apply(scHic,1,sum),
   expected=NULL,
-  startval=c(100,100,10,8,10,0.1,900,0.2,0,replicate(dim(hicImpute_data)[2],8)),
+  startval=c(100,100,10,8,10,0.1,900,0.2,0,replicate(dim(scHic)[2],8)),
   n=562,
   mc.cores = 1,
   cutoff=0.1,
