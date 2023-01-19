@@ -2,7 +2,7 @@ library(data.table)
 library(tidyverse)
 
 # To charge large dataset
-higachi_data <- fread("../Higashi/data/data.txt")
+higachi_data <- fread("../Higashi/data/human/data.txt")
 # nb_cells = 10
 
 # Cette onction est créée pour convertir le fichier des données scHic simulées en fichier accepté par le programme HIgachi
@@ -63,9 +63,9 @@ converting_matrix <- function(nb_cells, nb_mat_line){
           line = line + 1
 
           cell_data_higachi[block_cell+line, 1] <- i-1
-          cell_data_higachi[block_cell+line, 2] <- "chr1"
+          cell_data_higachi[block_cell+line, 2] <- "chr11"
           cell_data_higachi[block_cell+line, 3] <- pos1
-          cell_data_higachi[block_cell+line, 4] <- "chr2"
+          cell_data_higachi[block_cell+line, 4] <- "chr11"
           cell_data_higachi[block_cell+line, 5] <- pos2
           cell_data_higachi[block_cell+line, 6] <- mat[chr1, chr2]
         }
@@ -80,10 +80,15 @@ converting_matrix <- function(nb_cells, nb_mat_line){
 }
 
 
-cell_data_higachi <- converting_matrix(100, 562)
+cell_data_higachi <- converting_matrix(250, 562)
 
 # Save promoters ID
 save(cell_data_higachi, file = "rdata/cell_data_higachi.rda")
 
-# write.table(cell_data_higachi, file = "rdata/data.txt", sep = "\t", row.names = TRUE, col.names = TRUE)
+cell_data_higachi_df <- as.data.frame(cell_data_higachi)
+cell_data_higachi_df$cell_id <- as.numeric(cell_data_higachi_df$cell_id)
+cell_data_higachi_df$pos1 <- as.numeric(cell_data_higachi_df$pos1)
+cell_data_higachi_df$pos2 <- as.numeric(cell_data_higachi_df$pos2)
+cell_data_higachi_df$count <- as.numeric(cell_data_higachi_df$count)
+write.table(cell_data_higachi_df, file = "rdata/data.txt", sep = "\t", col.names = TRUE)
 
