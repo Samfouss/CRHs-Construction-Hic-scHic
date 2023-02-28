@@ -13,4 +13,5 @@ rdata/SCORE_ABC_RESULTS/
 abc_scores_cells_figures/
 Sc_Cell_In-silico_Hi-C/*
 rdata/MCMCImpute_result*
+rapports_files/*
 
