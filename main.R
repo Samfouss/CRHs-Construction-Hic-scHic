@@ -18,6 +18,7 @@ table(structure_3[promoters_ids, ]$X4)
 # On récupère ici le nombre de réplicat
 nb_replicas = length(unique(all_paired_structure$paire))
 
+nb_replicas = 2
 # La boucle ira de 1 à 500
 #nb_replicas = 50
 

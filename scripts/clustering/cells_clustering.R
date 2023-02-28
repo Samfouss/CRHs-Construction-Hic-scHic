@@ -1,40 +1,30 @@
-# Chargement de packages
-library("tidyverse")
-library("FactoMineR")
-library("factoextra")
-library("ggpubr")
+# Chargement des librairies
+library("devtools")
+## Warning: le package 'devtools' a été compilé avec la version R 4.1.3
+## Le chargement a nécessité le package : usethis
+## Warning: le package 'usethis' a été compilé avec la version R 4.1.3
+# Install "HiCImpute" package from github.
+# install_github("https://github.com/sl-lin/HiCImpute")
+library("HiCImpute")
 
-load("rdata/cells_matrix.rda")
-cells_data <- cells_matrix[[1]]
-for (b in 2:16) {
-  cells_data <- cbind(
-    cells_data,
-    cells_matrix[[b]] 
-  )
-}
+# scHiC_Kmeans sur les données avec imputations
+load("rdata/MCMCImpute_result.rda")
+hicImpute_data <- MCMCImpute_result$Impute_SZ
+ncells = 250
+colnames(hicImpute_data) <- str_c("cell", sprintf("%03d", seq(ncells)))
 
-#cells_data <- t(cells_matrix)
-cells_data[cells_data == 1] <- "in"
-cells_data[cells_data == 0] <- "Not in"
+max_cluters_hicImput = 12
+cluster_with_imp=scHiC_Kmeans(
+  hicImpute_data, 
+  centers=max_cluters_hicImput, 
+  nstart=1, 
+  iter.max=1000, 
+  seed=1
+)
 
-#cells_data <- data.frame(cells_data)
+table(cluster_with_imp$cluster)
 
-res.mca <- MCA(cells_data, graph = FALSE)
-print(res.mca)
-eig.val <- get_eigenvalue(res.mca)
+cluster_with_imp$cluster[cluster_with_imp$cluster==1]
 
-fviz_mca_biplot(res.mca, repel = TRUE, ggtheme = theme_minimal())
-fviz_mca_var(res.mca, choice = "mca.cor", repel = TRUE)
-fviz_mca_var(res.mca, repel = TRUE, ggtheme= theme_minimal())
-fviz_mca_var(res.mca, choice = "quanti.sup", ggtheme = theme_minimal())
-fviz_mca_ind(res.mca, label = "ind.sup", ggtheme = theme_minimal())
-fviz_mca_ind(res.mca, col.ind = "cos2", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), repel = TRUE, ggtheme = theme_minimal())
-hcpc_cluster <- HCPC(res.mca, kk=Inf, min = 3, graph = FALSE)
-# Le dendogram
-fviz_dend(hcpc_cluster, cex = 0.7, palette = "jco", rect = TRUE, rect_fill = TRUE, rect_border = "jco")
-# Graphique
-fviz_cluster(hcpc_cluster, repel = TRUE, geom = "point", main = "Classification des cellules")
-table(hcpc_cluster$data.clust$clust)
-hcpc_cluster$call$t
-
+save(cluster_with_imp, file = "rdata/cluster_with_imp.rda")
 

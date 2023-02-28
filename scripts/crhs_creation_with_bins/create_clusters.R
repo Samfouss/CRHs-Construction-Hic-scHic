@@ -1,6 +1,5 @@
 
 
-
 ################# function 2 ##################
 create_bip_clust_graph2 <- function(all_data, promoters_vec, rep_num, block_vec, min_dist = 3, cell_number){
   

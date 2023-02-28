@@ -1,0 +1,73 @@
+---
+title: "Rapport de la semaine du 14 Novembre 2022"
+author: "SAMA Fousseni"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(data.table)
+library(vroom)
+```
+
+
+# Compte rendu de la rencontre
+Lors de la rencontre du 09 Novembre dernier, plusieurs points important sur les résulats envoyés ont été soulevés.
+Tout d'abord, il a été remarqué que les résultats comparés dans les différents scénarios du rapport, n'étaient pas comparables. En effet, la matrice d'incidence produite à partir de toutes les billes de la première structure pour la cellule 1, n'était pas de même dimension que la matrice scHic. Etant donné
+que dans la matrice scHic donne les contacts entre bacs, elle diffère de la matrice d'incidence construite à partir des données brutes qui décrit les contacts entre billes. Les matrices ne sont donc pas directement comaprables.
+
+Deux solutions ont été envisagées et discutées afin de resoudre ce problème.
+- La première solution consiste à parametrer la simulation des matrices scHic de sorte que l'on ait une bille par bac. Cette première démarche pourrait servir de vérification afin de voir si les résulats de la simulation (scHic) concordent bien avec ceux obtenus par la matrice d'incidence.
+- Une deuxième solution serait de partir de la matrice d'incidence et construire une matrice de contacts entre les bacs. Dans ce cas, les bacs seront formés de blocks de $n = 2248/(Nombre de bacs)$ billes.
+
+```{r message=FALSE, warning=FALSE}
+# On charge la matrice d'incidence créée et sauvegardée à partir du code du fichier incidence_matrix_all_bins.R Dans cette matrice d'incidence les billes du block 1 sont exclues.
+load("rdata/compute_dist_bin1_cell1_.rda")
+
+# Nombre de contact trouvé dans la matrice d'incidence
+sum(compute_dist_bin1)
+# La matrice est bien symétrique
+isSymmetric(compute_dist_bin1)
+```
+
+
+# Solution 1 : Simulation des données scHic avec une bille par bac
+
+Dans les deux cas de simulation des données, le block 1 comme indiqué par les auteurs dans le code source n'est pas prise en compte.
+
+## Simulation des données avec les contraintes de ligation
+
+```{r  message=FALSE, warning=FALSE}
+# Le nombre de contacts dans les 10 matrices simulées
+matrix_sum_solution1_1 = rep(0, 10)
+for (i in 1:10) {
+  matrix_sum_solution1_1[i] = sum(
+    read.table(paste0("Sc_Cell_In-silico_Hi-C/verification_with_ligation/hic_mat_", sprintf("%03d", i), ".txt"), quote="\"", comment.char="", stringsAsFactors = FALSE)
+  )
+}
+
+summary(matrix_sum_solution1_1)
+```
+
+## Simulation des données sans les contraintes de ligation
+
+```{r  message=FALSE, warning=FALSE}
+# Le nombre de contacts dans les 10 matrices simulées
+matrix_sum_solution1_2 = rep(0, 10)
+for (i in 1:10) {
+  matrix_sum_solution1_2[i] = sum(
+    read.table(paste0("Sc_Cell_In-silico_Hi-C/verification_without_ligation/hic_mat_", sprintf("%03d", i), ".txt"), quote="\"", comment.char="", stringsAsFactors = FALSE)
+  )
+}
+
+summary(matrix_sum_solution1_2)
+```
+
+
+## Commentaire
+
+Les résulats présents ci-dessus, nous permet de voir les résulats de la simulation avec la soluation 1 proposée. Bien que la simulation des données sans les contraintes de ligation dans ce cas ci augmente le nombre de contacts, le résultat obtenu est nien loin de l'idéal trouvé avec la matice d'incidence.
+
+Dans l'article, les auteurs mentionnent dans la partie méthodologique (In silico Hi-c) que lors de la réticulation (crosslinking), les billes à réticuler sont identifier à partir d'un algorithme de clustering. Dans la construction des clusters, on peut bien remarquer dans le code source des auteurs (src/clustering.c) que, pour une bille fixée dans un cluster, les autres billes sont ajoutées dans celui-ci de façon aléatoire. En effet, un nombre pseudo aléatoire est généré lors du procéssus d'ajout des billes aux clusters et c'est lorsque ce dernier est inférieur à un seuil donné que la bille courante est rajouté au cluster. En d'autres termes, il se peut que lors du crosslining que certains contacts se perdent et cela même si la distance entre les billes est inférieure à d (3 dans notre situation). Contrairement aux matrices scHic, la matrice d'incidence qui est construite à partir des données brutes directement compte sans exception tous les contacts. Aucune perte n'est enrégistré dans ce cas.
+

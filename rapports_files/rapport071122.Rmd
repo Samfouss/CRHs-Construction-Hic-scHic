@@ -1,0 +1,154 @@
+---
+title: "Rapport de la semaine du 07 Novembre 2022"
+author: "SAMA Fousseni"
+date: "2022-11-07"
+output: word_document
+---
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(data.table)
+library(readr)
+```
+
+# Problématique
+A partir du code source de Luca Fiorillo et al. sur l'implementation des méthodes Hi-C, GAM et SPRITE, des données scHic ont pu être simulées en apportant quelques modifications à certians fichiers. Après confrontation de la matrice d'incidence construite à partir d'une structure d'une cellule (de la première cellule) et la matrice scHic trouvée après simulation de la même cellule, il a été noté un écart important (détail dans la suite) du nombre total de contacts.
+Afin de trouver des résultats acceptable en se reférant à l'article de Aleksandra A. Galitsyna et Mikhail S. Gelfand (Single-cell Hi-C data analysis: safety in numbers), quelques scénarios ont été envisagés en jouant sur certains paramètres et portions de codes mis à disposition par les auteurs.
+
+# Matrice d'incidence pour la cellule 1 à partir des deux structures
+Le code suivant, permet de générer une matrice d'incidence à partir de la première structure de la première cellule. C'est en effet une simple matrice d'incidence qui nous informe s'il y a contacte entre une paire de bille d'un même block. Ainsi nous avons pris soins de retirer les contacts entre une paire de billes qui ne fait ps partie d'un même block.
+On obtient après construction qu'il y a exactement 16738 contacts dans cette structure. En supposant qu'on obtienne le meme nombre de contacts dans la seconde straucture (chromosome) de la même cellule, l'on devrait se retrouver avec au total 16738\*2 contacts soit 33476. Tout le code est contenu dans le fichier **incidence_matrix_all_bins.R**.
+
+```{r message=FALSE, warning=FALSE}
+# On charge la matrice d'incidence créée et sauvegardée à partir du code du fichier incidence_matrix_all_bins.R
+load("rdata/compute_dist_bin1_cell1.rda")
+
+# Nombre de contact trouvé dans la matrice d'incidence
+sum(compute_dist_bin1)
+# La matrice est bien symétrique
+isSymmetric(compute_dist_bin1)
+
+```
+
+
+D'après les résulats de Aleksandra A. Galitsyna et al., nous sommes capable de récupérer au plus 24% de tous les contacts chez la souris. Dans les section suivante, nous allons pouvoir comparer les résulats trouvés avec ce seuil afin de voir si nous sommes capable de récuperer le maximum de contacts possible.
+
+# Scénario 0 (pc = 1)
+
+Le scénario 0 fait reférence à la simulation des données avec le code source des auteurs sans aucune modifictaion. Cependant on prend une probabilité pc = 1 pour retenir le plus de contacts possible.
+
+```{r message=FALSE, warning=FALSE}
+
+# Le nombre de contacts dans les 50 matrices simulées
+matrix_sum_scenario0 = rep(0, 50)
+for (i in 1:50) {
+  matrix_sum_scenario0[i] = sum(
+    read.table(paste0("Sc_Cell_In-silico_Hi-C/scenario0/hic_mat_", sprintf("%03d", i), ".txt"), quote="\"", comment.char="", stringsAsFactors = FALSE)
+  )
+}
+
+summary(matrix_sum_scenario0)
+
+summary(matrix_sum_scenario0/(16738*2))
+```
+
+D'après les résulats ci-dessus, avec le scénario 0, nous sommes capable de récupérer que près de 7% des contacts. Ce qui est bien loin des 24%. Cependant si ce pourcentage nous semble éloigné des 24%, il est quant même assez proche de cellui trouvé par Tan (2021) selon la figure 3d. On pourrait aussi voir que le nombre moyen de contacts trouvés (2627) sur les 50 cellules n'est pas si loin des résulats de Ramani (2017), qui trouve moins de $10^4$ contacts en moyenne pour plus de 10000 cellules (Figure 3c).
+
+# Scénario 1 : inclusion du block 1 (pc = 1)
+
+Dans ce scénario, nous modifions le code source des auteurs afin d'inclure le block 1 dans la construction des matrices de contacts contrairement au scénario 1.
+
+```{r message=FALSE, warning=FALSE}
+
+# Le nombre de contacts dans les 50 matrices simulées
+matrix_sum_scenario1 = rep(0, 50)
+for (i in 1:50) {
+  matrix_sum_scenario1[i] = sum(
+    read.table(paste0("Sc_Cell_In-silico_Hi-C/scenario1_p_1/hic_mat_", sprintf("%03d", i), ".txt"), quote="\"", comment.char="", stringsAsFactors = FALSE)
+  )
+}
+
+summary(matrix_sum_scenario1)
+
+summary(matrix_sum_scenario1/(16738*2))
+```
+
+
+Le nombre de contacts augmente en passant de 2627 en moyenne à 3101 dans les nouvelles matrices construites. Nous ignorons encore pourquoi le block 1 a été exclus dans la siulation. Mais l'inclure nous fait gagner une centaine de contacts perdus par rapport au scénario 1.
+
+# Scénario 2 : exclusion des conditions sur les ligation et inclusion du block 1 (pc = 1)
+
+Dans ce scénario, ce que nous essayons de voir c'est l'effet que les condistions sur la ligation ont sur le nombre de contacts. En effet, les auteurs posent quelques conditions lors de la ligation des clusters de billes. En les rétirant et en conservant le block 1 avec une probabilité de crosslinking de 1, les résulats obtenus sont les suivants :
+
+```{r message=FALSE, warning=FALSE}
+
+# Le nombre de contacts dans les 50 matrices simulées
+matrix_sum_scenario2_1 = rep(0, 50)
+for (i in 1:50) {
+  matrix_sum_scenario2_1[i] = sum(
+    read.table(paste0("Sc_Cell_In-silico_Hi-C/scenario2_p_1_with_block1/hic_mat_", sprintf("%03d", i), ".txt"), quote="\"", comment.char="", stringsAsFactors = FALSE)
+  )
+}
+
+summary(matrix_sum_scenario2_1)
+summary(matrix_sum_scenario2_1/(16738*2))
+```
+
+On constate donc qu'il y a un gaint assez conséquent du nombre de contacts. Nous passons donc à un pourcentage de contacts qui tournait entre 7 et 9% à 20%. Ainsi semble s'approcher du maximum de contacts que l'on pourrait obtenir avec ce scénario. Cependant, il est possible avec pc = 1 que tous les contacts ne soit pas de vrais contacts. Combien de contacts sommes nous capable de recuperer en diminuant la probabilité pc ?
+
+# Scénario 2 : exclusion des conditions sur les ligation et inclusion du block 1 (pc = 0.7)
+
+Toujours en restant dans le scénario 2 mais en diminuant la probabilité pc à 0.7, nous obtenons les résulats suivants :
+
+```{r message=FALSE, warning=FALSE}
+
+# Le nombre de contacts dans les 50 matrices simulées
+matrix_sum_scenario2_2 = rep(0, 50)
+for (i in 1:50) {
+  matrix_sum_scenario2_2[i] = sum(
+    read.table(paste0("Sc_Cell_In-silico_Hi-C/scenario2_p_0.7_with_block1/hic_mat_", sprintf("%03d", i), ".txt"), quote="\"", comment.char="", stringsAsFactors = FALSE)
+  )
+}
+
+summary(matrix_sum_scenario2_2)
+summary(matrix_sum_scenario2_2/(16738*2))
+```
+
+Le nombre de contacts à présent passe de 20% à 13% environ. Ce qui ne semble pas assez mal comme pourcentage de conatacts récupéré sur 50 cellules.
+
+# Scénario 2 : exclusion des conditions sur les ligation et inclusion du block 1 (pc = 0.3)
+
+Cependant, lorsqu'on fixe la probabilité pc = 0.3 avec le scénario 2, les résulats sont bien su dessus de ceux trouvés avec le scénario 0. Ce qui ne semble pas idéal.
+
+```{r message=FALSE, warning=FALSE}
+
+# Le nombre de contacts dans les 50 matrices simulées
+matrix_sum_scenario2_3 = rep(0, 50)
+for (i in 1:50) {
+  matrix_sum_scenario2_3[i] = sum(
+    read.table(paste0("Sc_Cell_In-silico_Hi-C/scenario2_p_0.3_with_block1/hic_mat_", sprintf("%03d", i), ".txt"), quote="\"", comment.char="", stringsAsFactors = FALSE)
+  )
+}
+
+summary(matrix_sum_scenario2_3)
+summary(matrix_sum_scenario2_3/(16738*2))
+```
+
+# Scénario 2 : exclusion des conditions sur les ligation et exclusion du block 1 (pc = 1)
+
+Nous avons aussi envisagé le scénario 2 dans le cas ou l'on exclu le block 1 comme le fait les auteurs. Les résultats trouvés semblent très proche du cas ou l'on inclu le block 1. En d'autres termes, avec le scénario 2, inclure le bock 1 nous fera ganger près de 3% de contacts par rapport à ce scénario.
+
+```{r message=FALSE, warning=FALSE}
+
+# Le nombre de contacts dans les 50 matrices simulées
+matrix_sum_scenario2_4 = rep(0, 50)
+for (i in 1:50) {
+  matrix_sum_scenario2_4[i] = sum(
+    read.table(paste0("Sc_Cell_In-silico_Hi-C/scenario2_p_1_without_block1/hic_mat_", sprintf("%03d", i), ".txt"), quote="\"", comment.char="", stringsAsFactors = FALSE)
+  )
+}
+
+summary(matrix_sum_scenario2_4)
+summary(matrix_sum_scenario2_4/(16738*2))
+```
+
