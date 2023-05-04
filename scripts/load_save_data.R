@@ -21,21 +21,31 @@ load("rdata/promoters_ids.rda")
 load("rdata/all_single_structure.rda")
 load("rdata/all_paired_structure.rda")
 
-structure_1 <- as_tibble(
-  all_paired_structure%>%
-    filter(paire == str_c(1, sprintf("%03d", 1)))%>%
-    select(-c(ends_with("_c"), "paire"))%>%
-    mutate(
-      ID = paste0("B", sprintf("%02d", X4), sprintf("%04d", 1:n()))
-    )
-)
+# structure_1 <- as_tibble(
+#   all_paired_structure%>%
+#     filter(paire == str_c(1, sprintf("%03d", 1)))%>%
+#     select(-c(ends_with("_c"), "paire"))%>%
+#     mutate(
+#       ID = paste0("B", sprintf("%02d", X4), sprintf("%04d", 1:n()))
+#     )
+# )
+# 
+# structure_2 <- as_tibble(
+#   all_paired_structure%>%
+#     filter(paire == str_c(2, sprintf("%03d", 1)))%>%
+#     select(-c(ends_with("_c"), "paire"))%>%
+#     mutate(
+#       ID = paste0("B", sprintf("%02d", X4), sprintf("%04d", 1:n()))
+#     )
+# )
 
-structure_2 <- as_tibble(
-  all_paired_structure%>%
-    filter(paire == str_c(2, sprintf("%03d", 1)))%>%
-    select(-c(ends_with("_c"), "paire"))%>%
-    mutate(
-      ID = paste0("B", sprintf("%02d", X4), sprintf("%04d", 1:n()))
-    )
-)
+#knitr::knit_hooks$set(webgl = hook_webgl)
+# On Charge les IDs des promoters deja sauvés
+load("rdata/scHic_promoters_ids.rda")
+# Chargemment des données sur le clustering
+load("rdata/MCMCImpute_result.rda")
+load("rdata/MCMCImpute_result2.rda")
+# Chargement des données sur le clustering
+load("rdata/cluster_with_imp.rda")
+
 

@@ -1,9 +1,9 @@
-library("devtools")
+# library("devtools")
 ## Warning: le package 'devtools' a été compilé avec la version R 4.1.3
 ## Le chargement a nécessité le package : usethis
 ## Warning: le package 'usethis' a été compilé avec la version R 4.1.3
 # Install "HiCImpute" package from github.
-# install_github("https://github.com/sl-lin/HiCImpute")
+install_github("https://github.com/sl-lin/HiCImpute")
 library("HiCImpute")
 
 # Disposition des données dans une liste
@@ -34,6 +34,31 @@ for (i in seq_len(ncells)) {
 }
 mat = NULL
 
+data("K562_T1_4k")
+data("K562_bulk")
+data("K562_T1_4k_true")
+scHiC=K562_T1_4k
+set.seed(1234)
+T1_4k_result=MCMCImpute(
+  scHiC=K562_T1_4k,
+  bulk=K562_bulk,
+  expected=K562_T1_4k_true,
+  startval=c(100,100,10,8,10,0.1,900,0.2,0,replicate(dim(scHiC)[2],8)),
+  n=61,
+  mc.cores = 1,
+  cutoff=0.5,
+  niter=50,
+  burnin=10
+)
+
+for (cell in seq_len(dim(scHiC)[2])) {
+  mean()
+}
+
+
+# Chargement des données sur le clustering
+load("rdata/MCMCImpute_result.rda")
+data = MCMCImpute_result$scHiC
 
 # HicImpute
 MCMCImpute_result=MCMCImpute(

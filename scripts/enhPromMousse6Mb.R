@@ -5,7 +5,7 @@
 ## Installation des packages dont on aura probablement besoin
 # BiocManager::install("IRanges")
 # BiocManager::install("rtracklayer") # Ce package permet d'importer les fichiers génomiques de différents formats
-# BiocManager::install("TxDb.Mmusculus.UCSC.mm10.knownGene")
+# BiocManager::install("rtracklayer") # Ce package permet d'importer les fichiers génomiques de différents formats
 # BiocManager::install("org.Mm.eg.db")
 ## Chargeent des librairy
 library(rtracklayer)
@@ -22,7 +22,7 @@ keys(muscu_txdb)
 keytypes(org.Mm.eg.db)
 keys(org.Mm.eg.db)
 genes_muscu <- genes(muscu_txdb)
-symbol <- select(
+symbol <- AnnotationDbi::select(
   org.Mm.eg.db,
   keys = genes_muscu$gene_id, 
   keytype = "ENTREZID", 

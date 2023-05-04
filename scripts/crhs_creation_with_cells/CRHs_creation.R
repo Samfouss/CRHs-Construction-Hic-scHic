@@ -1,22 +1,7 @@
 # Chargement des librairies
-library(rmarkdown)
-library(rgl)
-library(magick)
-library(randomcoloR)
-library(readr)
-library(tidyverse)
-library(igraph)
-library(ggpubr)
-library(RColorBrewer)
-library(finalfit)
-library(knitr)
-#knitr::knit_hooks$set(webgl = hook_webgl)
-# On Charge les IDs des promoters deja sauvés
-load("rdata/scHic_promoters_ids.rda")
-# Chargemment des données sur le clustering
-load("rdata/MCMCImpute_result.rda")
-# Chargement des données sur le clustering
-load("rdata/cluster_with_imp.rda")
+source("./scripts/load_save_data.R")
+source("./scripts/crhs_creation_with_cells/create_graph_from_cells.R")
+
 # Présentation des clusters
 table(cluster_with_imp$cluster)
 
@@ -30,7 +15,6 @@ MCMCImpute_result_Impute_SZ_ <- MCMCImpute_result$Impute_SZ > 0
 clusters = unique(cluster_with_imp$cluster)
 nb_clu = length(clusters)
 
-
 clu_chrs = list()
 for (clu in clusters) {
   
@@ -39,9 +23,6 @@ for (clu in clusters) {
   # On recupère ici les numero des cellules
   elems = as.numeric(str_sub(names(class), 5, 7))
   
-  # On récupère ici le nombre de cellule dans le cluster
-  nb_replicas = length(elems)
-
   # On boucle sur les cellules du cluster courant
   for (cell in elems) {
     
@@ -63,32 +44,13 @@ for (clu in clusters) {
     # isSymmetric(incidence_mat)
     
     # Initialisation du premier cluster
-    if(cell==elems[1]){
-      all_net_result <- create_bip_clust_graph_from_cell(
-        incidence_mat, 
-        scHic_promoters_ids, 
-        cell
-      )
-    }else{
+    print("Cluster")
       
-      print("Cluster")
-      all_net_result <- create_bip_clust_graph_from_cell(
-        incidence_mat, 
-        scHic_promoters_ids, 
-        cell
-      )
-      
-      print("Overlap")
-      overlap_edge <- edge_identity_overlap_from_cell(
-        net, 
-        all_net_result
-      )
-      
-      print("Fusion")
-      all_net_result <- fusion_comp_from_cell(net, all_net_result, overlap_edge)
-      
-    }
-    
+    all_net_result <- create_bip_clust_graph_from_cell(
+      incidence_mat, 
+      scHic_promoters_ids, 
+      cell
+    )
   }
   
   clu_chrs[[length(clu_chrs)+1]] <- all_net_result
@@ -97,11 +59,5 @@ for (clu in clusters) {
 names(clu_chrs) <- str_c("cluster", clusters)
 clu_chrs
 
-
-
-
-
-
-
-
+save(clu_chrs, file = "rdata/clu_chrs_result.rda")
 
