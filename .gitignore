@@ -4,6 +4,7 @@
 SHARE_FOLDER.Rproj
 .gitignore
 ignoring_files/*
+ignoring_code/*
 rdata/fusion_*
 rdata/all_net_result.rda
 rdata/cells_matrix.rda
@@ -16,3 +17,4 @@ rdata/MCMCImpute_result*
 rapports_files/*
 rdata/HIC156_smaller*
 rapport*
+RScript_HicImpute
