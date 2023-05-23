@@ -14,8 +14,11 @@ create_bip_clust_graph_from_cell <- function(cell_matrix, scHic_promoters_vec, c
     cell_matrix
   )
   
-  net_bip <- simplify(net_bip, remove.multiple = FALSE, remove.loops = TRUE)
-  # net <- simplify(net, remove.multiple = FALSE, remove.loops = TRUE)
+  # Effacer les connections multiples entre les noeuds
+  if(!is_simple(net_bip)){
+    net_bip <- simplify(net_bip, remove.multiple = FALSE, remove.loops = TRUE)
+    # net <- simplify(net, remove.multiple = FALSE, remove.loops = TRUE) 
+  }
   
   net_components_bip <- components(net_bip, mode = c("weak", "strong"))
   # net_components <- components(net, mode = c("weak", "strong"))

@@ -1,4 +1,8 @@
 
+
+
+################ Fonction permettant de produire des table de données adaptées à Juicer ##############
+
 juicerInputCreation <- function(matrix_to_process, start_ = 109000000, bins = 2667, bins_per_bacs = 4, mat_dim = 562, ncells = 1){
   
   df_nrow = mat_dim*(mat_dim-1)/2
@@ -42,6 +46,51 @@ juicerInputCreation <- function(matrix_to_process, start_ = 109000000, bins = 26
   
 }
 
+
+
+####### Construction des matrices de contacts par cluster #############
+
+constr_mat_contacts <- function(cells_clusters, cellUperDiagData){
+  clusters_matrix <- list()
+  cell_dim = 562
+  clusters = unique(cells_clusters)
+  for (clus in seq_len(length(clusters))) {
+    
+    temp = cellUperDiagData[which(cells_clusters==clus), , drop = FALSE]
+    #temp <- apply(temp, 2, function(x) as.numeric(x>0))
+    temp <- apply(temp, 2, sum)
+    
+    mat_row_name = paste0("BAC", sprintf("%03d", seq_len(cell_dim)))
+    mat_temp <- matrix(
+      0, 
+      nrow = cell_dim, 
+      ncol = cell_dim,
+      dimnames = list(mat_row_name, mat_row_name)
+    )
+    
+    mat_temp[upper.tri(mat_temp, diag = FALSE)] <- temp
+    mat_temp <- mat_temp + t(mat_temp)
+    # cells_clusters$size[clus]
+    juicerFile <- juicerInputCreation(mat_temp, ncells= 1)
+    
+    juicerFile <- juicerFile[juicerFile$score!= 0, ]
+    
+    write.table(
+      juicerFile, 
+      file = paste0("rdata/juicerInputFiles/cluster_", clus, "_juicer_input.txt"), 
+      sep = "\t", 
+      row.names = FALSE, 
+      col.names = FALSE
+    )
+    
+    mat_temp <- apply(mat_temp, 2, function(x) as.numeric(x>0))
+    clusters_matrix[[length(clusters_matrix) + 1]] <- mat_temp
+    
+  }
+  
+  names(clusters_matrix) <- str_c("mat.inc.cluster_", clusters)
+  clusters_matrix
+}
 
 
 
