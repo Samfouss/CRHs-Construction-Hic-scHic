@@ -36,7 +36,10 @@ degenerationMatrix <- function(matrixToDegenerate){
       # On recupere ici les indices en ligne de toutes les billes faisant parti du bac j
       j = which(col_names %in% paste0(bins_color, bacs_matrix[bacs_matrix[, 2]==bac_j, 1]))
       # On sum les contacts entre les billes recuperées en ligne et en colonne
-      mat_reduct[bac_i, bac_j] = sum(matrixToDegenerate[i, j])
+      mat_reduct[bac_i, bac_j] = 0
+      if(sum(matrixToDegenerate[i, j]) > 0){
+        mat_reduct[bac_i, bac_j] = 1
+      }
     }
   }
   
@@ -62,4 +65,6 @@ for (line in seq_len(length(bins_number))) {
   bacs_matrix[line, 1] = sprintf("%04d", line)
   bacs_matrix[line, 2] = paste0("BAC", sprintf("%03d", b))
 }
+
+rm("bins_number", "bacs_number", "line", "b")
 

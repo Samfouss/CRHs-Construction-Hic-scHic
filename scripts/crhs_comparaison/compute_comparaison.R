@@ -11,8 +11,12 @@ compute_comparaison <- function(all_net_result, clu_chrs_result){
   row_names = ""
   for (l in 2:length(all_net_result)) {
     # print(length(all_net_result[[l]]$crhs))
-    matLines = matLines + length(all_net_result[[l]]$crhs)
-    row_names = c(row_names, str_c("block_", l, "_crhs_", seq_len(length(all_net_result[[l]]$crhs))))
+    for (c in seq_len(length(all_net_result[[l]]$crhs))) {
+      if(length(all_net_result[[l]]$crhs[[c]]) == 2){
+        matLines = matLines +  1
+        row_names = c(row_names, str_c("block_", l, "_crhs_", c))
+      }
+    }
   }
   row_names = row_names[row_names != ""]
   
@@ -34,13 +38,13 @@ compute_comparaison <- function(all_net_result, clu_chrs_result){
       ncol = matCol,
       dimnames = list(row_names, col_names)
     ),
-    "intersection_rate_mat" = matrix(
+    "sensibility_mat" = matrix(
       0,
       nrow = matLines,
       ncol = matCol,
       dimnames = list(row_names, col_names)
     ),
-    "gain_rate_mat" = matrix(
+    "specificity_mat" = matrix(
       0,
       nrow = matLines,
       ncol = matCol,
@@ -70,43 +74,43 @@ compute_comparaison <- function(all_net_result, clu_chrs_result){
         crhs_ = length(all_net_result[[bl]]$crhs)
         # On boucle sur les CRHs recuperés
         for (crh_ in seq_len(crhs_)) {
-          ln = ln + 1
-          # crhs_comparation_res
-          # recovery_mat[ln, col]
-          
-          # On reconstruit ici le réseau afin d'avoir le nombre de noeuds et d'arretes pour la comparaison
-          net_bip_struc <- graph_from_incidence_matrix(all_net_result[[bl]]$crhs[[crh_]]$mat_incidence)
-          
-          # On s'attends à avoir un pourcentage de recupération réduit à (nombre de cellules dans le cluster*Nombre de billes dans le bac)
-          crhs_comparation_res$recovery_mat[ln, col] = (length(V(net_bip_clus))/length(V(net_bip_struc)) + length(E(net_bip_clus))/length(E(net_bip_struc)))/2
-          
-          # Construction de la matrice de degenerescence
-          mat_degeneration <- degenerationMatrix(all_net_result[[bl]]$crhs[[crh_]]$mat_incidence)
-          
-          # redimenssion des deux matrices afin de calcluer les statistiques sur les intersections
-          rowmat = union(rownames(mat), rownames(mat_degeneration))
-          colmat = union(colnames(mat), colnames(mat_degeneration))
-          
-          rowmat_ = intersect(rownames(mat), rownames(mat_degeneration))
-          colmat_ = intersect(colnames(mat), colnames(mat_degeneration))
-          
-          mat_degeneration_redim <- matrix(
-            0,
-            ncol=length(colmat), 
-            nrow=length(rowmat), 
-            dimnames=list(rowmat, colmat)
-          )
-          mat_redim <- mat_degeneration_redim
-          
-          indxA <- outer(rowmat, colmat, FUN=paste) %in% outer(rownames(mat), colnames(mat), FUN=paste)
-          indxB <- outer(rowmat, colmat, FUN=paste) %in% outer(rownames(mat_degeneration), colnames(mat_degeneration), FUN=paste)
-          mat_redim[indxA] <- mat
-          mat_degeneration_redim[indxB] <- mat_degeneration
-          
-          crhs_comparation_res$intersection_rate_mat[ln, col] = sum(mat_redim==mat_degeneration_redim)/(nrow(mat_redim)*ncol(mat_redim))
-          
-          mismatchs = length(rowmat[rowmat != rowmat_])*length(colmat[colmat != colmat_])
-          crhs_comparation_res$gain_rate_mat[ln, col] = sum(mat_redim==mat_degeneration_redim)/mismatchs
+          if(length(all_net_result[[bl]]$crhs[[crh_]])==2){
+            ln = ln + 1
+            # Construction de la matrice de degenerescence
+            mat_degeneration <- degenerationMatrix(all_net_result[[bl]]$crhs[[crh_]]$mat_incidence)
+            
+            # redimenssion des deux matrices afin de calcluer les statistiques sur les intersections
+            rowmat = union(rownames(mat), rownames(mat_degeneration))
+            colmat = union(colnames(mat), colnames(mat_degeneration))
+            
+            rowmat_ = intersect(rownames(mat), rownames(mat_degeneration))
+            colmat_ = intersect(colnames(mat), colnames(mat_degeneration))
+            
+            mat_degeneration_redim <- matrix(
+              0,
+              ncol=length(colmat), 
+              nrow=length(rowmat), 
+              dimnames=list(rowmat, colmat)
+            )
+            mat_redim <- mat_degeneration_redim
+            
+            indxA <- outer(rowmat, colmat, FUN=paste) %in% outer(rownames(mat), colnames(mat), FUN=paste)
+            indxB <- outer(rowmat, colmat, FUN=paste) %in% outer(rownames(mat_degeneration), colnames(mat_degeneration), FUN=paste)
+            mat_redim[indxA] <- mat
+            mat_degeneration_redim[indxB] <- mat_degeneration
+            
+            crhs_comparation_res$sensibility_mat[ln, col] = sum(mat_degeneration_redim[mat_redim==mat_degeneration_redim]==1)/sum(mat_degeneration_redim==1)
+            
+            # mismatchs = length(rowmat[rowmat != rowmat_])*length(colmat[colmat != colmat_])
+            crhs_comparation_res$specificity_mat[ln, col] = sum(mat_degeneration_redim[mat_redim==mat_degeneration_redim]==0)/sum(mat_degeneration_redim==0)
+            
+            # On reconstruit ici le réseau afin d'avoir le nombre de noeuds et d'arretes pour la comparaison
+            net_bip_struc <- graph_from_incidence_matrix(mat_degeneration)
+            
+            # On s'attends à avoir un pourcentage de recupération réduit à (nombre de cellules dans le cluster*Nombre de billes dans le bac)
+            crhs_comparation_res$recovery_mat[ln, col] = (length(V(net_bip_clus))/length(V(net_bip_struc)) + length(E(net_bip_clus))/length(E(net_bip_struc)))/2
+            
+          }
         }
       }
       
