@@ -1,5 +1,9 @@
+# Chargement des librairies
+library(tidyverse)
+library(igraph)
 
 # Etape 1 : Chargement des CRHs obtenus a partir des structures
+load("rdata/all_net_result_complex_.rda")
 load("rdata/all_net_result_complex.rda")
 
 # Etape 2 : Chargement des CRHs obtenus à partir des clusters
@@ -14,9 +18,11 @@ source("scripts/crhs_comparaison/compute_comparaison.R")
 ##################  Comparaison des CRHs ####################
 
 crhs_comparation_res = compute_comparaison(all_net_result_complex, clu_chrs_result)
+crhs_comparation_res_ = compute_comparaison(all_net_result_complex_, clu_chrs_result)
 
 ########### Sauvegarde des données ###########
 save(crhs_comparation_res, file = "rdata/crhs_comparation_res.rda")
+save(crhs_comparation_res_, file = "rdata/crhs_comparation_res_.rda")
 
 
 

@@ -16,6 +16,9 @@ for (i in 2:length(all_net_result_complex)) {
     if((nrow(mat) == 1 & ncol(mat) == 1) | (nrow(mat) == 2 & ncol(mat) == 1) | (nrow(mat) == 1 & ncol(mat) == 2)){
       all_net_result_complex[[i]]$crhs[[k]] <- -1
       all_net_result_complex[[i]]$resume_fusion[k] <- "-1"
+      # if(i == 3){
+      #   print(paste(nrow(mat), " - ", ncol(mat)))
+      # }
     }
   }
 }
@@ -33,7 +36,7 @@ for (bl in 2:16) {
       b = b + 1
     }
   }
-  
+  print(b)
   nb_crhs = nb_crhs + b
   block_len = block_len + b*b
 }
@@ -49,7 +52,7 @@ source("scripts/crhs_comparaison/degenerationMatrix_fn.R")
 crhs_struc_fusion = matrix(
   0,
   nrow = block_len,
-  ncol = 4
+  ncol = 5
 )
 
 l = 1
@@ -102,6 +105,10 @@ for (bl in 2:16) {
           crhs_struc_fusion[l, 2] = i
           crhs_struc_fusion[l, 3] = j
           crhs_struc_fusion[l, 4] = intersection
+          crhs_struc_fusion[l, 5] = i
+          if(min(sum(mat_deg_redim1==1), sum(mat_deg_redim2==1))==sum(mat_deg_redim1==1)){
+            crhs_struc_fusion[l, 5] = j
+          }
           l = l + 1
         }
       }
@@ -115,7 +122,108 @@ crhs_struc_fusion = crhs_struc_fusion[crhs_struc_fusion[, 1]!= 0, ]
 
 summary(crhs_struc_fusion[, 4])
 
+########### Sauvegarde des résulats sur les paires de CRHs qui se chevauchent ##########
 save(crhs_struc_fusion, file = "rdata/crhs_struc_fusion.rda")
+
+
+################################ Fusion des CRHs qui se chevauchent ##########################################"
+
+
+########### Sauvegarde des résulats sur les paires de CRHs qui se chevauchent ##########
+load("rdata/crhs_struc_fusion.rda")
+
+all_net_result_complex_ = all_net_result_complex
+unique_crhs = crhs_struc_fusion[, 1]
+
+# Initilisation des données sur les CRHs
+for (bl in unique_crhs) {
+  block = crhs_struc_fusion[crhs_struc_fusion[, 1]==bl, ]
+  
+  crh_to_remove = sort(unique(block[block[, 4]==1, 5]))
+  for (i in crh_to_remove) {
+    all_net_result_complex_[[bl]]$crhs[[i]] = -1
+  }
+}
+
+
+nb_crhs = 0
+for (bl in 2:16) {
+  b = 0
+  for (i in seq_len(length(all_net_result_complex_[[bl]]$crhs))) {
+    
+    if(length(all_net_result_complex_[[bl]]$crhs[[i]])>1){
+      
+      b = b + 1
+    }
+  }
+  print(b)
+  nb_crhs = nb_crhs + b
+}
+nb_crhs
+
+# for (bl in 2:length(all_net_result_complex)) {
+#   
+#   # Ici on recupere
+#   block = crhs_struc_fusion[crhs_struc_fusion[, 1]==bl, ]
+#   unique_crhs = unique(block[, 2])  
+#   for (crh in unique_crhs) {
+#     
+#     # On recupere ici les informations du CRHs courant à fusioner
+#     all_net_result_complex_[[bl]]$crhs[[crh]] = all_net_result_complex[[bl]]$crhs[[crh]]
+#     # On prend ici les informations sur le CRH fixé
+#     crh_fixed = block[block[, 2]==crh, , drop=FALSE]
+#     # On prend ici les ou le CRH(s) qui chevauche le mieux le CRH fixé
+#     max_intersect = which(crh_fixed[, 4]==1)
+#     
+#     if(length(max_intersect)>0){
+#       crhs_to_merge = crh_fixed[max_intersect, 3]
+#       
+#       for (crh_to_merge in crhs_to_merge) {
+#         # if(){
+#         #   
+#         # }
+#         # print(paste(crh_to_merge, " ", bl))
+#         mat_init = all_net_result_complex_[[bl]]$crhs[[crh]]$mat_incidence
+#         mat_to_merge = all_net_result_complex[[bl]]$crhs[[crh_to_merge]]$mat_incidence
+#         
+#         rowmat = union(rownames(mat_init), rownames(mat_to_merge))
+#         colmat = union(colnames(mat_init), colnames(mat_to_merge))
+#         
+#         mat_init_redim <- matrix(
+#           0,
+#           ncol=length(colmat), 
+#           nrow=length(rowmat), 
+#           dimnames=list(rowmat, colmat)
+#         )
+#         mat_to_merge_redim <- mat_init_redim
+#         
+#         indxA <- outer(rowmat, colmat, FUN=paste) %in% outer(rownames(mat_init), colnames(mat_init), FUN=paste)
+#         indxB <- outer(rowmat, colmat, FUN=paste) %in% outer(rownames(mat_to_merge), colnames(mat_to_merge), FUN=paste)
+#         mat_init_redim[indxA] <- mat_init
+#         mat_to_merge_redim[indxB] <- mat_to_merge
+#         
+#         mat_fusion = mat_init_redim + mat_to_merge_redim
+#         mat_fusion[mat_fusion>1] <- 1
+#         all_net_result_complex_[[bl]]$crhs[[crh]]$mat_incidence <- mat_fusion
+#       } 
+#     }
+#     
+#   }
+#   
+# }
+
+nb_crhs = 0
+for (bl in 2:16) {
+  for (i in seq_len(length(all_net_result_complex_[[bl]]$crhs))) {
+    if(length(all_net_result_complex_[[bl]]$crhs[[i]])>1){
+      nb_crhs = nb_crhs + 1
+    }
+  }
+}
+nb_crhs
+
 ########### Sauvegarde des données ###########
 save(all_net_result_complex, file = "rdata/all_net_result_complex.rda")
 
+########### Sauvegarde des résulats sur les CRHs complexes fusionnés ###############
+save(all_net_result_complex_, file = "rdata/all_net_result_complex_.rda")

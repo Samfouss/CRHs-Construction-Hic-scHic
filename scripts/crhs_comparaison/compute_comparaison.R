@@ -32,12 +32,6 @@ compute_comparaison <- function(all_net_result, clu_chrs_result){
   
   ### Création de la matrice pour accueillir les résulats
   crhs_comparation_res = list(
-    "recovery_mat" = matrix(
-      0,
-      nrow = matLines,
-      ncol = matCol,
-      dimnames = list(row_names, col_names)
-    ),
     "sensibility_mat" = matrix(
       0,
       nrow = matLines,
@@ -45,6 +39,18 @@ compute_comparaison <- function(all_net_result, clu_chrs_result){
       dimnames = list(row_names, col_names)
     ),
     "specificity_mat" = matrix(
+      0,
+      nrow = matLines,
+      ncol = matCol,
+      dimnames = list(row_names, col_names)
+    ),
+    "noeuds_mat" = matrix(
+      0,
+      nrow = matLines,
+      ncol = matCol,
+      dimnames = list(row_names, col_names)
+    ),
+    "arretes_mat" = matrix(
       0,
       nrow = matLines,
       ncol = matCol,
@@ -108,7 +114,7 @@ compute_comparaison <- function(all_net_result, clu_chrs_result){
             net_bip_struc <- graph_from_incidence_matrix(mat_degeneration)
             
             # On s'attends à avoir un pourcentage de recupération réduit à (nombre de cellules dans le cluster*Nombre de billes dans le bac)
-            crhs_comparation_res$recovery_mat[ln, col] = (length(V(net_bip_clus))/length(V(net_bip_struc)) + length(E(net_bip_clus))/length(E(net_bip_struc)))/2
+            # crhs_comparation_res$recovery_mat[ln, col] = (length(V(net_bip_clus))/length(V(net_bip_struc)) + length(E(net_bip_clus))/length(E(net_bip_struc)))/2
             
           }
         }
