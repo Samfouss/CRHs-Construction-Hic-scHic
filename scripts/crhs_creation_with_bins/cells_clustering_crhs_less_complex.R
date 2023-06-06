@@ -84,8 +84,8 @@ for (bl in 2:16) {
         mat_inc_deg = degenerationMatrix(mat_inc)
         
         # redimenssion des deux matrices afin de calcluer les statistiques sur les intersections
-        rowmat = intersect(rownames(mat_inc_deg), rownames(mat_inc_init_deg))
-        colmat = intersect(colnames(mat_inc_deg), colnames(mat_inc_init_deg))
+        rowmat = union(rownames(mat_inc_deg), rownames(mat_inc_init_deg))
+        colmat = union(colnames(mat_inc_deg), colnames(mat_inc_init_deg))
         
         mat_deg_redim1 <- matrix(
           0,
@@ -95,8 +95,10 @@ for (bl in 2:16) {
         )
         mat_deg_redim2 <- mat_deg_redim1
         
-        mat_deg_redim1 <- mat_inc_deg[rowmat, colmat]
-        mat_deg_redim2 <- mat_inc_init_deg[rowmat, colmat]
+        indxA <- outer(rowmat, colmat, FUN=paste) %in% outer(rownames(mat_inc_deg), colnames(mat_inc_deg), FUN=paste)
+        indxB <- outer(rowmat, colmat, FUN=paste) %in% outer(rownames(mat_inc_init_deg), colnames(mat_inc_init_deg), FUN=paste)
+        mat_deg_redim1[indxA] <- mat_inc_deg
+        mat_deg_redim2[indxB] <- mat_inc_init_deg
         
         if((min(sum(mat_deg_redim1==1), sum(mat_deg_redim2==1))) != 0){
           intersection = sum(mat_deg_redim1[mat_deg_redim2==mat_deg_redim1]==1)/(min(sum(mat_deg_redim1==1), sum(mat_deg_redim2==1)))

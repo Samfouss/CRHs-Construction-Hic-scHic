@@ -89,8 +89,8 @@ compute_comparaison <- function(all_net_result, clu_chrs_result){
             rowmat = union(rownames(mat), rownames(mat_degeneration))
             colmat = union(colnames(mat), colnames(mat_degeneration))
             
-            rowmat_ = intersect(rownames(mat), rownames(mat_degeneration))
-            colmat_ = intersect(colnames(mat), colnames(mat_degeneration))
+            # rowmat_ = intersect(rownames(mat), rownames(mat_degeneration))
+            # colmat_ = intersect(colnames(mat), colnames(mat_degeneration))
             
             mat_degeneration_redim <- matrix(
               0,
