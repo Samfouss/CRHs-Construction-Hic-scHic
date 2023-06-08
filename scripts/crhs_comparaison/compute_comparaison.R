@@ -2,7 +2,7 @@
 
 ## Cette fonction permet de faire la comparaison entre les CRHs et donne les statistiques
 
-compute_comparaison <- function(all_net_result, clu_chrs_result){
+compute_comparaison <- function(all_net_result, clu_chrs_result, make_degeneration = TRUE){
   
   ################ Création de la matrice servqnt à accuaillir les données de la comparaison ########
   
@@ -82,9 +82,11 @@ compute_comparaison <- function(all_net_result, clu_chrs_result){
         for (crh_ in seq_len(crhs_)) {
           if(length(all_net_result[[bl]]$crhs[[crh_]])==2){
             ln = ln + 1
+            mat_degeneration <- all_net_result[[bl]]$crhs[[crh_]]$mat_incidence
             # Construction de la matrice de degenerescence
-            mat_degeneration <- degenerationMatrix(all_net_result[[bl]]$crhs[[crh_]]$mat_incidence)
-            
+            if(make_degeneration){
+              mat_degeneration <- degenerationMatrix(all_net_result[[bl]]$crhs[[crh_]]$mat_incidence)
+            }
             # redimenssion des deux matrices afin de calcluer les statistiques sur les intersections
             rowmat = union(rownames(mat), rownames(mat_degeneration))
             colmat = union(colnames(mat), colnames(mat_degeneration))

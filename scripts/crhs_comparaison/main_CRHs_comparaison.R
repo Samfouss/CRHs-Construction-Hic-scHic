@@ -18,7 +18,7 @@ source("scripts/crhs_comparaison/compute_comparaison.R")
 ##################  Comparaison des CRHs ####################
 
 crhs_comparation_res = compute_comparaison(all_net_result_complex, clu_chrs_result)
-crhs_comparation_res_ = compute_comparaison(all_net_result_complex_, clu_chrs_result)
+crhs_comparation_res_ = compute_comparaison(all_net_result_complex_, clu_chrs_result, make_degeneration=FALSE)
 
 ########### Sauvegarde des données ###########
 save(crhs_comparation_res, file = "rdata/crhs_comparation_res.rda")

@@ -154,11 +154,11 @@ for (bl in 2:16) {
   for (i in seq_len(length(all_net_result_complex_[[bl]]$crhs))) {
     
     if(length(all_net_result_complex_[[bl]]$crhs[[i]])>1){
-      
+      all_net_result_complex_[[bl]]$crhs[[i]]$mat_incidence = degenerationMatrix(all_net_result_complex_[[bl]]$crhs[[i]]$mat_incidence)
       b = b + 1
     }
   }
-  print(b)
+  # print(b)
   nb_crhs = nb_crhs + b
 }
 nb_crhs
