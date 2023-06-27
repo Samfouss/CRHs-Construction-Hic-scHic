@@ -229,3 +229,58 @@ save(all_net_result_complex, file = "rdata/all_net_result_complex.rda")
 
 ########### Sauvegarde des résulats sur les CRHs complexes fusionnés ###############
 save(all_net_result_complex_, file = "rdata/all_net_result_complex_.rda")
+
+##### Les CRHs avant degenerescance #########
+
+crhs_inspection_ = matrix(
+  0,
+  nrow = 1332,
+  ncol = 3
+)
+
+l = 1
+
+for (bl in 2:16) {
+  for (i in seq_len(length(all_net_result_complex[[bl]]$crhs))) {
+    if(length(all_net_result_complex[[bl]]$crhs[[i]])>1){
+      crhs_inspection_[l, 1] =  dim(all_net_result_complex[[bl]]$crhs[[i]]$mat_incidence)[1]
+      crhs_inspection_[l, 2] =  dim(all_net_result_complex[[bl]]$crhs[[i]]$mat_incidence)[2]
+      crhs_inspection_[l, 3] =  paste0("Block ", bl, "- CRH ", i)
+      l = l +  1
+    }
+  }
+}
+
+# Premier gros CRH
+crhs_inspection_[which.max(as.numeric(crhs_inspection_[, 1])), ]
+
+# Deuxième gros CRH
+crhs_inspection_[which.max(as.numeric(crhs_inspection_[, 2])), ]
+
+
+##### Les CRHs apres degenerescance #########
+crhs_inspection = matrix(
+  0,
+  nrow = 1256,
+  ncol = 3
+)
+
+l = 1
+
+for (bl in 2:16) {
+  for (i in seq_len(length(all_net_result_complex_[[bl]]$crhs))) {
+    if(length(all_net_result_complex_[[bl]]$crhs[[i]])>1){
+      crhs_inspection[l, 1] =  dim(all_net_result_complex_[[bl]]$crhs[[i]]$mat_incidence)[1]
+      crhs_inspection[l, 2] =  dim(all_net_result_complex_[[bl]]$crhs[[i]]$mat_incidence)[2]
+      crhs_inspection[l, 3] =  paste0("Block ", bl, "- CRH ", i)
+      l = l +  1
+    }
+  }
+}
+
+# Premier gros CRH
+crhs_inspection[which.max(as.numeric(crhs_inspection[, 1])), ]
+
+# Deuxième gros CRH
+crhs_inspection[which.max(as.numeric(crhs_inspection[, 2])), ]
+

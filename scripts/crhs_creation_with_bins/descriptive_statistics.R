@@ -5,11 +5,48 @@ library(ggpubr)
 
 # Chargement des données
 load("rdata/all_net_result_complex_.rda")
+load("rdata/all_net_result.rda")
+
+####################### Statistiques sur les réseaux construis de façon brutes 
+
+ncrhs = matrix(
+  0, 
+  nrow = 16, 
+  ncol = 1
+)
+
+ncrhs_ = matrix(
+  0, 
+  nrow = 12373, 
+  ncol = 3
+)
+
+l = 1
+
+for (b in 2:16) {
+  
+  nb = length(all_net_result[[b]]$crhs)
+  
+  for (crh in seq_len(nb)) {
+    ncrhs_[l, 1] = b
+    ncrhs_[l, 2] = nrow(all_net_result[[b]]$crhs[[crh]]$mat_incidence)
+    ncrhs_[l, 3] = ncol(all_net_result[[b]]$crhs[[crh]]$mat_incidence)
+    
+    l = l + 1
+  }
+  ncrhs[b, 1] = nb
+}
+
+summary(ncrhs)
+summary(ncrhs_[, 2])
+summary(ncrhs_[, 3])
+
+
 
 # Combien de contacts avons nous en moyenne dans les matrices ?
 
 # Inspection des matrices
-ncrhs = 1173
+ncrhs = 1256
 
 crhs_inspections = matrix(
   0,
@@ -21,6 +58,7 @@ ln = 1
 for(bl in 2:length(all_net_result_complex_)) {
   
   for (crh in seq_len(length(all_net_result_complex_[[bl]]$crhs))) {
+    
     if(length(all_net_result_complex_[[bl]]$crhs[[crh]])>1){
       # print(paste(bl, " ", crh, " ", length(all_net_result_complex[[bl]]$crhs[[crh]])))
       crhs_inspections[ln, 1] = nrow(all_net_result_complex_[[bl]]$crhs[[crh]]$mat_incidence)
@@ -96,6 +134,7 @@ for(bl in 2:length(all_net_result_complex_)) {
 
 crhs_inspections_ = crhs_inspections_[crhs_inspections_$name != "", ]
 view(crhs_inspections_)
+
 
 summary(crhs_inspections_$nb_edges)
 summary(crhs_inspections_$nb_vertices)

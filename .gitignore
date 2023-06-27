@@ -4,6 +4,7 @@
 SHARE_FOLDER.Rproj
 .gitignore
 ignoring_files/*
+ignorng_data/*
 ignoring_code/*
 rdata/fusion_*
 rdata/all_net_result.rda

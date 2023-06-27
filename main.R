@@ -18,7 +18,7 @@ table(structure_3[promoters_ids, ]$X4)
 # On récupère ici le nombre de réplicat
 nb_replicas = length(unique(all_paired_structure$paire))
 
-nb_replicas = 2
+# nb_replicas = 2
 # La boucle ira de 1 à 500
 #nb_replicas = 50
 
@@ -69,7 +69,8 @@ for (r in 1:nb_replicas) {
     print("Overlap")
     overlap_edge <- edge_identity_overlap2(
       net, 
-      all_net_result
+      all_net_result,
+      0.5
     )
     
     print("Fusion")

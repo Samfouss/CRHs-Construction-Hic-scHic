@@ -4,13 +4,8 @@
 #'
 #' @description
 #' #' `edge_identity_overlap` retourne la similarité des CRHs en terme de nombre d'arrêts. L'idée est de partir de la matrice binaire des distance entre les différentes billes et de compter exactement le nombre de billes qui concident en terme de nombre d'arrêtes (correspond a 1 dans la matrice binaire) sur le nombre de billes total
-#'
-#' @param point_1 
-#' @param point_2 
 
-
-
-edge_identity_overlap2 <- function(structure_net_comp1, structure_net_comp2){
+edge_identity_overlap2 <- function(structure_net_comp1, structure_net_comp2, seuil=0){
   
   
   # On recupère les blocs à parcourir
@@ -27,18 +22,9 @@ edge_identity_overlap2 <- function(structure_net_comp1, structure_net_comp2){
     nb_crh1 = length(structure_net_comp1[[b]]$crhs)
     nb_crh2 = length(structure_net_comp2[[b]]$crhs)
     
-    chevauche_1_2 = matrix(NA, nb_crh1, nb_crh2)
+    chevauche_1_2 = matrix(0, nb_crh1, nb_crh2)
     
-    if(sum(structure_net_comp1[[b]]$crhs[[1]]$mat_incidence)==-1){
-      
-      results[[length(results)+1]] <- list(
-        "chevauche_1_2_perc" = 0,
-        "chev_edge_comp1" = 0,
-        "chev_edge_comp2" = 0,
-        "chev_edge_comp" = 0
-      )
-      
-    }else if(sum(structure_net_comp2[[b]]$crhs[[1]]$mat_incidence)==-1){
+    if(sum(structure_net_comp1[[b]]$crhs[[1]]$mat_incidence)==-1 || sum(structure_net_comp2[[b]]$crhs[[1]]$mat_incidence)==-1){
       
       results[[length(results)+1]] <- list(
         "chevauche_1_2_perc" = 0,
@@ -85,33 +71,57 @@ edge_identity_overlap2 <- function(structure_net_comp1, structure_net_comp2){
         }
         
       }
+      chevauche = chevauche_1_2
+      chevauche_1_2[chevauche_1_2<=seuil]=NA
       
-      c1.list = apply(chevauche_1_2,1,which.max)
-      c2.list = apply(chevauche_1_2,2,which.max)
       
-      chev_edge_comp1 = rbind(1:nb_crh1, c1.list)
-      # Composantes du réplicat 2 et leur composante chevauchant le plus dans le réplicat 1
-      chev_edge_comp2 = rbind(1:nb_crh2, c2.list)
-      
-      chev_edge_comp = matrix(NA, 2, ncol = min(ncol(chev_edge_comp1), ncol(chev_edge_comp2)))
-      
-      for (m1 in seq_len(ncol(chev_edge_comp1))) {
-        for (m2 in seq_len(ncol(chev_edge_comp2))) {
-          if(all(chev_edge_comp1[, m1]==rev(chev_edge_comp2[, m2]))){
-            chev_edge_comp[, sum(!is.na(chev_edge_comp[1, ])) + 1] <- chev_edge_comp1[, m1]
-          } 
+      if(sum(chevauche_1_2, na.rm = TRUE) == 0){
+        
+        results[[length(results)+1]] <- list(
+          "chevauche_1_2_perc" = 0,
+          "chev_edge_comp1" = 0,
+          "chev_edge_comp2" = 0,
+          "chev_edge_comp" = 0
+        )
+        
+      }else{
+        
+        # chevauche_1_2[rowSums(chevauche_1_2, na.rm = TRUE)>0, , drop=FALSE]
+        c1.list = unlist(apply(chevauche_1_2,1,which.max))
+        c2.list = unlist(apply(chevauche_1_2,2,which.max))
+        
+        # Lorsque la colonne vaut -1, cela voudrait dire qu'il y a pas de chevauchement avec le seuil choisi sur la ligne
+        chev_edge_comp1 = rbind(1:nb_crh1, -1)
+        chev_edge_comp1[2, rowSums(chevauche_1_2, na.rm = TRUE)>0] <- c1.list
+        # Je retir les colonnes où la ligne 2 vaut -1
+        chev_edge_comp1 = chev_edge_comp1[, which(chev_edge_comp1[2, ]!=-1), drop=FALSE]
+        # Composantes du réplicat 2 et leur composante chevauchant le plus dans le réplicat 1
+        #       # Lorsque la colonne vaut -1, cela voudrait dire qu'il y a pas de chevauchement avec le seuil choisi sur la colonne
+        chev_edge_comp2 = rbind(1:nb_crh2, -1)
+        chev_edge_comp2[2, colSums(chevauche_1_2, na.rm = TRUE)>0] <- c2.list
+        # Je retir les colonnes où la ligne 2 vaut -1
+        chev_edge_comp2 = chev_edge_comp2[, which(chev_edge_comp2[2, ]!=-1), drop=FALSE]
+        
+        chev_edge_comp = matrix(NA, 2, ncol = min(ncol(chev_edge_comp1), ncol(chev_edge_comp2)))
+      # print(ncol(chev_edge_comp1))
+      # print(ncol(chev_edge_comp2))
+        for (m1 in seq_len(ncol(chev_edge_comp1))) {
+          for (m2 in seq_len(ncol(chev_edge_comp2))) {
+            if(all(chev_edge_comp1[, m1]==rev(chev_edge_comp2[, m2]))){
+              chev_edge_comp[, sum(!is.na(chev_edge_comp[1, ])) + 1] <- chev_edge_comp1[, m1]
+            } 
+          }
         }
+      
+        chev_edge_comp <- matrix(chev_edge_comp[!is.na(chev_edge_comp)], 2, ncol = length(chev_edge_comp[!is.na(chev_edge_comp)])/2)
+        
+        results[[length(results)+1]] <- list(
+          "chevauche_1_2_perc" = chevauche,
+          "chev_edge_comp1" = chev_edge_comp1,
+          "chev_edge_comp2" = chev_edge_comp2,
+          "chev_edge_comp" = chev_edge_comp
+        )
       }
-      
-      chev_edge_comp <- matrix(chev_edge_comp[!is.na(chev_edge_comp)], 2, ncol = length(chev_edge_comp[!is.na(chev_edge_comp)])/2)
-      
-      
-      results[[length(results)+1]] <- list(
-        "chevauche_1_2_perc" = chevauche_1_2,
-        "chev_edge_comp1" = chev_edge_comp1,
-        "chev_edge_comp2" = chev_edge_comp2,
-        "chev_edge_comp" = chev_edge_comp
-      )
       
     }
     
@@ -122,6 +132,8 @@ edge_identity_overlap2 <- function(structure_net_comp1, structure_net_comp2){
   
 }
 
+
+# res = edge_identity_overlap2(net1, net2)
 
 
 

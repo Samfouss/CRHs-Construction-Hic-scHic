@@ -1,7 +1,7 @@
 library(readr)
 library(IRanges)
 
-nb_clusters = 5
+nb_clusters = 10
 merge_loops_clus = list()
 
 ######## Création d'une matrice donnant les régions de chaque bac

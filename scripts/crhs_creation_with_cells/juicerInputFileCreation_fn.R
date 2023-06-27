@@ -1,6 +1,4 @@
 
-
-
 ################ Fonction permettant de produire des table de données adaptées à Juicer ##############
 
 juicerInputCreation <- function(matrix_to_process, start_ = 109000000, bins = 2667, bins_per_bacs = 4, mat_dim = 562, ncells = 1){
@@ -72,6 +70,7 @@ constr_mat_contacts <- function(cells_clusters, cellUperDiagData){
     mat_temp <- mat_temp + t(mat_temp)
     # cells_clusters$size[clus]
     juicerFile <- juicerInputCreation(mat_temp, ncells= 1)
+    juicerFile$score = round(juicerFile$score)
     
     juicerFile <- juicerFile[juicerFile$score!= 0, ]
     
@@ -91,6 +90,4 @@ constr_mat_contacts <- function(cells_clusters, cellUperDiagData){
   names(clusters_matrix) <- str_c("mat.inc.cluster_", clusters)
   clusters_matrix
 }
-
-
 

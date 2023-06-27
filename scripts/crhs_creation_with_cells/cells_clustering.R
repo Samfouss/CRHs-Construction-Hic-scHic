@@ -10,47 +10,34 @@ load("rdata/scHic_promoters_ids.rda")
 # Chargement des données sur le clustering
 load("rdata/cellUperDiagData.rda")
 cellUperDiagData = t(cellUperDiagData)
-row.names(cellUperDiagData) <- str_c("cellule_", 1:nrow(cellUperDiagData))
 
 load("rdata/cellUperDiagData_with_rep.rda")
-cellUperDiagData_with_rep = t(cellUperDiagData_with_rep)
-row.names(cellUperDiagData_with_rep) <- str_c("cellule_", 1:nrow(cellUperDiagData_with_rep))
+cellUperDiagData = t(cellUperDiagData_with_rep)
 
-############################ Kmeans avec 5 class ######################
+load("rdata/MCMCImpute_result.rda")
+cellUperDiagData = t(MCMCImpute_result$Impute_SZ)
 
-# Afin de reproduire les mêmes résulats en choisissant les memes points de départ (puisqu'ils sont aléatoire)
+
+row.names(cellUperDiagData) <- str_c("cellule_", 1:nrow(cellUperDiagData))
+############################ Kmeans classes balancées ######################
+start_cls = 5
+end_cls = 15
 set.seed(99999)
-nb_class = 4
-cells_clusters_4 <- kmeans(
-  cellUperDiagData_with_rep,
-  nb_class,
-  algorithm = c("Hartigan-Wong"),
-  iter.max = 50,
-  trace=FALSE
-)
-cells_clusters_4$withinss
-cells_clusters_4$betweenss
-
-constr_mat_contacts(cells_clusters_4$cluster, cellUperDiagData_with_rep)
-
-############################ Kmeans avec 4 class ######################
-
-nb_class = 5
-cells_clusters_5 <- kmeans(
-  cellUperDiagData_with_rep,
-  nb_class,
-  algorithm = c("Hartigan-Wong"),
-  iter.max = 50,
-  trace=FALSE
-)
-cells_clusters_5$withinss
-cells_clusters_5$betweenss
-
-constr_mat_contacts(cells_clusters_5$cluster, cellUperDiagData_with_rep)
-
-############################ Kmeans avec 3 class ######################
-
-nb_class = 3
+for (cls in seq(start_cls, end_cls)) {
+  cells_clusters <- kmeans(
+    cellUperDiagData,
+    cls,
+    algorithm = c("Hartigan-Wong"),
+    iter.max = 50,
+    trace=FALSE
+  )
+  
+  print(paste0("Repartition des cellules dans les classes avec ", cls, " clusters"))
+  print(cells_clusters$size)
+}
+# Afin de reproduire les mêmes résulats en choisissant les memes points de départ (puisqu'ils sont aléatoire)
+nb_class = 10
+set.seed(99999)
 cells_clusters <- kmeans(
   cellUperDiagData,
   nb_class,
@@ -58,9 +45,47 @@ cells_clusters <- kmeans(
   iter.max = 50,
   trace=FALSE
 )
+cells_clusters$size
 cells_clusters$withinss
 cells_clusters$betweenss
 
+points(cells_clusters$centers)
+
+constr_mat_contacts(cells_clusters$cluster, cellUperDiagData)
+
+################## K Medoids clustering #####################
+library(fpc)
+
+pamk_clusters = pamk(cellUperDiagData)
+table(pamk_clusters$pamobject$clustering)
+
+library(cluster)
+pamk_clusters_8 = pam(cellUperDiagData, 8)
+table(pamk_clusters_8$clustering)
+constr_mat_contacts(pamk_clusters_8$clustering, cellUperDiagData)
+
+
+pamk_clusters_5 = pamk(cellUperDiagData, 5)
+table(pamk_clusters_5$pamobject$clustering)
+constr_mat_contacts(pamk_clusters_5$pamobject$clustering, cellUperDiagData)
+
+################## clustering hierarchique #####################
+library(stats)
+hclust_clusters = hclust(cellUperDiagData)
+
+################## clustering hierarchique #####################
+
+dbscan_clusters = dbscan(cellUperDiagData, eps = 0.2, MinPts = 10)
+
+
+#################################### Distribution ####################
+
+for (clus in seq_len(nb_class)) {
+  print(paste0("cluster ", clus))
+  dtl = read.table(paste0("rdata/juicerInputFiles/cluster_", clus, "_juicer_input.txt"))
+  print(dim(dtl))
+  print(summary(dtl[, 9]))
+}
 
 ############################ Utilisation de l'ACP  ######################
 
@@ -81,3 +106,14 @@ clusters = unique(hcpc_cluster$data.clust$clust)
 
 # Résumé
 summary(as.vector(table(hcpc_cluster$data.clust[, ncol(hcpc_cluster$data.clust), drop = FALSE])))
+
+
+
+
+
+
+
+
+
+
+
