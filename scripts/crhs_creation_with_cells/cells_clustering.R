@@ -11,14 +11,16 @@ load("rdata/scHic_promoters_ids.rda")
 load("rdata/cellUperDiagData.rda")
 cellUperDiagData = t(cellUperDiagData)
 
-load("rdata/cellUperDiagData_with_rep.rda")
-cellUperDiagData = t(cellUperDiagData_with_rep)
-
 load("rdata/MCMCImpute_result.rda")
 cellUperDiagData = t(MCMCImpute_result$Impute_SZ)
 
-
 row.names(cellUperDiagData) <- str_c("cellule_", 1:nrow(cellUperDiagData))
+
+load("rdata/cellUperDiagData_with_repT.rda")
+ncell = 250
+cellUperDiagData = t(cellUperDiagData_with_repT)
+row.names(cellUperDiagData) <- paste0("cellule_", seq_len(nrow(cellUperDiagData)), "_rep", seq_len(ncell))
+
 ############################ Kmeans classes balancées ######################
 start_cls = 5
 end_cls = 15
