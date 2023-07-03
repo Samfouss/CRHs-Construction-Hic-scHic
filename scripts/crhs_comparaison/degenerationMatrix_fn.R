@@ -1,6 +1,5 @@
 
 
-
 degenerationMatrix <- function(matrixToDegenerate){
   
   # matrixToDegenerate = matrixToDegenerate

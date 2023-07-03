@@ -135,7 +135,7 @@ save(crhs_struc_fusion, file = "rdata/crhs_struc_fusion.rda")
 load("rdata/crhs_struc_fusion.rda")
 
 all_net_result_complex_ = all_net_result_complex
-unique_crhs = crhs_struc_fusion[, 1]
+unique_crhs = unique(crhs_struc_fusion[, 1])
 
 # Initilisation des données sur les CRHs
 for (bl in unique_crhs) {
@@ -234,7 +234,7 @@ save(all_net_result_complex_, file = "rdata/all_net_result_complex_.rda")
 
 crhs_inspection_ = matrix(
   0,
-  nrow = 1332,
+  nrow = 7440,
   ncol = 3
 )
 

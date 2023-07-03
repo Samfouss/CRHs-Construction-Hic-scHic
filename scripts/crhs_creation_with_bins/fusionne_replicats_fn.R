@@ -9,7 +9,7 @@
 #' @param edge_overlap_result On donne à la fonction fusion_comp les résulats retournés par la fonction edgeoverlap
 
 
-fusion_comp2 <- function(structure_net_comp1, structure_net_comp2, edge_overlap_result){
+bip_graphs_fusion <- function(structure_net_comp1, structure_net_comp2, edge_overlap_result){
   
   # On recupère les blocs à parcourir
   n_block = max(

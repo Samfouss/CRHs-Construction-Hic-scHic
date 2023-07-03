@@ -1,7 +1,6 @@
 library(readr)
 library(IRanges)
 
-nb_clusters = 10
 merge_loops_clus = list()
 
 ######## Création d'une matrice donnant les régions de chaque bac
@@ -74,4 +73,4 @@ for (clus in seq_len(nb_clusters)) {
   
 }
 
-save(merge_loops_clus, file = "merge_loops_clus.rda")
+save(merge_loops_clus, file = paste0("rdata/all_rda_data/merge_loops_clus_", nb_clusters, ".rda"))

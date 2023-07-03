@@ -5,7 +5,7 @@
 #' @description
 #' #' `edge_identity_overlap` retourne la similarité des CRHs en terme de nombre d'arrêts. L'idée est de partir de la matrice binaire des distance entre les différentes billes et de compter exactement le nombre de billes qui concident en terme de nombre d'arrêtes (correspond a 1 dans la matrice binaire) sur le nombre de billes total
 
-edge_identity_overlap2 <- function(structure_net_comp1, structure_net_comp2, seuil=0){
+edge_identity_overlap <- function(structure_net_comp1, structure_net_comp2, seuil=0){
   
   
   # On recupère les blocs à parcourir
