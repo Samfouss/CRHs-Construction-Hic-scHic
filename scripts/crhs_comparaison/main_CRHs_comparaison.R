@@ -1,13 +1,8 @@
-# Chargement des librairies
-library(tidyverse)
-library(igraph)
+# Ce fichier permet de faire la comparaison et stocke les résultats dans le fichier crhs_comparation_res
 
-# Etape 1 : Chargement des CRHs obtenus a partir des structures
+# Etape 1 : Chargement des CRHs obtenus a partir des structures dites complexes et après elimination des réseaux redondants
 load("rdata/all_rda_data/all_net_result_complex_.rda")
-#load("rdata/all_net_result_complex.rda")
-
-# Les résultats de quel cluster ?
-nb_clusters = 6
+#load("rdata/all_rda_data/all_net_result_complex.rda")
 
 # Etape 2 : Chargement des CRHs obtenus à partir des clusters
 load(paste0("rdata/all_rda_data/clu_chrs_result_", nb_clusters, ".rda"))

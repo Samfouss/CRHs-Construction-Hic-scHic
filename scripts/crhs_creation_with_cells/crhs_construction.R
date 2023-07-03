@@ -1,6 +1,7 @@
 
 # Chargement des données sur les clusters
-load("rdata/all_rda_data/merge_loops_clus.rda")
+load(paste0("rdata/all_rda_data/merge_loops_clus_", nb_clusters, ".rda"))
+load("rdata/all_rda_data/scHic_promoters_ids.rda")
 
 clu_chrs_result = list()
 for (clus in seq_len(length(merge_loops_clus))) {
