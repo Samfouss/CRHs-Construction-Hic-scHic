@@ -1,5 +1,5 @@
 # Exécution des scripts nécéssaires
-source("./scripts/load_save_data.R")
+source("./scripts/crhs_creation_with_bins/load_save_data.R")
 source("./scripts/crhs_creation_with_bins/create_bip_graphs_fn.R")
 source("./scripts/crhs_creation_with_bins/chevauche_CRHs_fn.R")
 source("./scripts/crhs_creation_with_bins/fusionne_replicats_fn.R")

@@ -17,5 +17,7 @@ Sc_Cell_In-silico_Hi-C/*
 rdata/MCMCImpute_result*
 rapports_files/*
 rdata/HIC156_smaller*
+rdata/cell_folder/*
 rapport*
 RScript_HicImpute
+rdata/juicerOutputFiles/*

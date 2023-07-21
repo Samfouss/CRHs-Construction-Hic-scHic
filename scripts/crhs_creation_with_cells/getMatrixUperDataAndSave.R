@@ -33,6 +33,8 @@ ncol = 562
 ncells = 250
 data_dim = ncol*(ncol-1)/2
 nrep = 40
+cells = seq_len(ncells)
+repts = seq_len(nrep)
 
 cellUperDiagData_with_repT1 <- matrix(
   0,
@@ -40,9 +42,6 @@ cellUperDiagData_with_repT1 <- matrix(
   ncol = data_dim
 )
 l = 1
-
-cells = seq_len(ncells)
-repts = seq_len(nrep)
 
 for (i in cells[1:length(cells)]) {
   for( j in repts[1:(length(repts)/2)]){
@@ -62,11 +61,15 @@ for (i in cells[1:length(cells)]) {
   }
 }
 
+save(cellUperDiagData_with_repT1, file = "rdata/all_rda_data/cellUperDiagData_with_repT1.rda")
+
 cellUperDiagData_with_repT2 <- matrix(
   0,
   nrow = (ncells*nrep)/2,
   ncol = data_dim
 )
+
+l = 1
 
 for (i in cells[1:length(cells)]) {
   for( j in repts[(length(repts)/2 + 1):length(repts)]){
@@ -85,5 +88,10 @@ for (i in cells[1:length(cells)]) {
     l = l + 1
   }
 }
+
+save(cellUperDiagData_with_repT2, file = "rdata/all_rda_data/cellUperDiagData_with_repT2.rda")
+
+load("rdata/all_rda_data/cellUperDiagData_with_repT2.rda")
+load("rdata/all_rda_data/cellUperDiagData_with_repT1.rda")
 
 save(cellUperDiagData_with_repT, file = "rdata/all_rda_data/cellUperDiagData_with_repT.rda")

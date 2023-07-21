@@ -1,5 +1,5 @@
-library(readr)
-library(IRanges)
+
+# Ce fichier permet de passer des données de Juicer (les sorties de Juicer) aux matrices d'incidence puis stocke les résultats dans le fichier Rda "merge_loops_clus"
 
 merge_loops_clus = list()
 
