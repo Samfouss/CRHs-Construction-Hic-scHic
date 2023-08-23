@@ -7,8 +7,8 @@ degenerationMatrix <- function(matrixToDegenerate){
   # Extraction des noms des lignes et colonnes de la matrice à degenerer
   row_names = row.names(matrixToDegenerate)
   col_names = colnames(matrixToDegenerate)
-  # Recupération des numeros de blocks
-  bins_color = unique(str_sub(colnames(matrixToDegenerate), 1, 3))
+  # Recupération des numeros de blocks (inutile)
+  # bins_color = unique(str_sub(colnames(matrixToDegenerate), 1, 3))
   # Récupération du numero de la bille. Ces numero seront utilisés pour identifier la position et le bac de chaque bille
   row_names_numb = str_sub(row_names, 4, 7)
   col_names_numb = str_sub(col_names, 4, 7)
@@ -30,10 +30,10 @@ degenerationMatrix <- function(matrixToDegenerate){
   
   for (bac_i in row_names_) {
     for (bac_j in col_names_) {
-      # On recupere ici les indices en ligne de toutes les billes faisant parti du bac i
-      i = which(row_names %in% paste0(bins_color, bacs_matrix[bacs_matrix[, 2]==bac_i, 1]))
-      # On recupere ici les indices en ligne de toutes les billes faisant parti du bac j
-      j = which(col_names %in% paste0(bins_color, bacs_matrix[bacs_matrix[, 2]==bac_j, 1]))
+      # On recupere ici les indices en ligne de toutes les billes faisant partie du bac i
+      i = which(str_sub(row_names,4,7) %in% bacs_matrix[bacs_matrix[, 2]==bac_i, 1])
+      # On recupere ici les indices en ligne de toutes les billes faisant partie du bac j
+      j = which(str_sub(col_names,4,7) %in% bacs_matrix[bacs_matrix[, 2]==bac_j, 1])
       # On sum les contacts entre les billes recuperées en ligne et en colonne
       mat_reduct[bac_i, bac_j] = 0
       if(sum(matrixToDegenerate[i, j]) > 0){
