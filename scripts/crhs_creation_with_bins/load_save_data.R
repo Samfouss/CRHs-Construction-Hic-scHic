@@ -14,12 +14,12 @@ library(plotly)
 library(data.table)
 #knitr::knit_hooks$set(webgl = hook_webgl)
 # On Charge les IDs des promoters deja sauvés
-load("rdata/promoters_ids.rda")
+load("rdata/all_rda_data/promoters_ids.rda")
 # On charge ici dans l'environnement toutes les données des structures.
 # structure_data contient 250 éléments. Chaque élément contient une paire de structure (paire matchée dans le dossier data/pairs sur gitHub)
 #load("rdata/structure_data.rda")
-load("rdata/all_single_structure.rda")
-load("rdata/all_paired_structure.rda")
+load("rdata/all_rda_data/all_single_structure.rda")
+load("rdata/all_rda_data/all_paired_structure.rda")
 
 # structure_1 <- as_tibble(
 #   all_paired_structure%>%
@@ -39,11 +39,3 @@ load("rdata/all_paired_structure.rda")
 #     )
 # )
 
-#knitr::knit_hooks$set(webgl = hook_webgl)
-# On Charge les IDs des promoters deja sauvés
-load("rdata/scHic_promoters_ids.rda")
-# Chargemment des données sur le clustering
-load("rdata/MCMCImpute_result.rda")
-load("rdata/MCMCImpute_result2.rda")
-# Chargement des données sur le clustering
-load("rdata/cluster_with_imp.rda")
