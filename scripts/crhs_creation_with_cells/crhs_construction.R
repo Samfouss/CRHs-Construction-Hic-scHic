@@ -1,15 +1,21 @@
 
 # Chargement des données sur les clusters
 load(paste0("rdata/all_rda_data/merge_loops_clus_", nb_clusters, ".rda"))
+load("rdata/all_rda_data/cluster_matrix_result.rda")
 load("rdata/all_rda_data/scHic_promoters_ids.rda")
 
-clu_chrs_result = list()
-for (clus in seq_len(length(merge_loops_clus))) {
-  net = create_bip_clust_graph_from_cell(merge_loops_clus[[clus]], scHic_promoters_ids, clus)
-  clu_chrs_result[[length(clu_chrs_result)+1]] <- net
+get_clusters_crhs <- function(clusters_matrix){
+  clu_chrs_result = list()
+  for (clus in seq_len(length(clusters_matrix))) {
+    net = create_bip_clust_graph_from_cell(clusters_matrix[[clus]], scHic_promoters_ids, clus)
+    clu_chrs_result[[length(clu_chrs_result)+1]] <- net
+  }
+  
+  names(clu_chrs_result) <- str_c("cluster", seq_len(length(clusters_matrix)))
+  clu_chrs_result
 }
 
-names(clu_chrs_result) <- str_c("cluster", seq_len(length(merge_loops_clus)))
+clu_chrs_result <- get_clusters_crhs(cluster_matrix_result)
 
 ############## Distribution des crhs ##########
 ncrhs <- matrix(
