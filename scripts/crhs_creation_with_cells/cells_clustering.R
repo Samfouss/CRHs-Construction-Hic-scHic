@@ -72,7 +72,7 @@ cells_lustering <- function(dataToUse = "ideal_rep_data", clustering_meth = "KMe
     
   }
   
-  save(cells_clusters, file = paste0("rdata/all_rda_data/pamk_clusters_", nb_cluster,".rda"))
+  save(cells_clusters, file = "rdata/all_rda_data/cluster_result.rda")
   
   cells_clusters
 }
