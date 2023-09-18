@@ -5,13 +5,13 @@ source("./scripts/crhs_creation_with_bins/chevauche_CRHs_fn.R")
 source("./scripts/crhs_creation_with_bins/fusionne_replicats_fn.R")
 
 # On peut voir que dans tous blocks, à des proportions différentes, on y trouve au moins un promoter
-sort(unique(structure_1[promoters_ids, ]$X4))
-promoters_ids[which(promoters_ids<341)]
-
-# Un petit resumé du nombre de promoters par bloc
-table(structure_1[promoters_ids, ]$X4)
-table(structure_2[promoters_ids, ]$X4)
-table(structure_3[promoters_ids, ]$X4)
+# sort(unique(structure_1[promoters_ids, ]$X4))
+# promoters_ids[which(promoters_ids<341)]
+# 
+# # Un petit resumé du nombre de promoters par bloc
+# table(structure_1[promoters_ids, ]$X4)
+# table(structure_2[promoters_ids, ]$X4)
+# table(structure_3[promoters_ids, ]$X4)
 
 ######################### Creation des CRHs #########################
 
@@ -34,12 +34,13 @@ for (r in 1:nb_replicas) {
   
   # Initialisation du premier cluster
   if(r==1){
+    print(cell)
+    print(chr)
     all_net_result <- create_bip_graphs(
       as_tibble(
         all_paired_structure%>%
           filter(
-            paire == str_c(chr, sprintf("%03d", cell)),
-            X4 != 1
+            paire == str_c(chr, sprintf("%03d", cell))
           )%>%
           select(-c(ends_with("_c"), "paire"))%>%
           mutate(
@@ -52,6 +53,7 @@ for (r in 1:nb_replicas) {
       3,
       sprintf("%03d", cell)
     )
+    
   }else{
     
     structure <- as_tibble(
@@ -79,6 +81,17 @@ for (r in 1:nb_replicas) {
   }
   
 }
+
+ncrhs = 0
+for (bl in 1:16) {
+  n = length(all_net_result[[bl]]$crhs)
+  for (i in seq_len(n)) {
+    if(sum(all_net_result[[bl]]$crhs[[i]]$mat_incidence) == -1){
+      ncrhs = ncrhs + 1
+    }
+  }
+}
+ncrhs
 
 print(all_net_result$block1$resume_fusion)
 

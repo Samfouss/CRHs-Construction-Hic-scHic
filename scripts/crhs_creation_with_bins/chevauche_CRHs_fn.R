@@ -7,7 +7,6 @@
 
 edge_identity_overlap <- function(structure_net_comp1, structure_net_comp2, seuil=0){
   
-  
   # On recupère les blocs à parcourir
   n_block = max(
     length(structure_net_comp1), 
@@ -45,6 +44,7 @@ edge_identity_overlap <- function(structure_net_comp1, structure_net_comp2, seui
           # On recupère ici la matrice d'incidence
           mat2 = structure_net_comp2[[b]]$crhs[[j]]$mat_incidence
           
+          
           # Ici je recupère les noms des lignes et colonnes
           rowmat = union(rownames(mat1), rownames(mat2))
           colmat = union(colnames(mat1), colnames(mat2))
@@ -73,7 +73,6 @@ edge_identity_overlap <- function(structure_net_comp1, structure_net_comp2, seui
       }
       chevauche = chevauche_1_2
       chevauche_1_2[chevauche_1_2<=seuil]=NA
-      
       
       if(sum(chevauche_1_2, na.rm = TRUE) == 0){
         

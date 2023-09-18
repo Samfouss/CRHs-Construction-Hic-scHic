@@ -34,6 +34,26 @@ for (res in seq_len(length(clu_chrs_result))) {
 sum(ncrhs[, 1])
 summary(ncrhs[, 1])
 
+ncells = 250
+crhs_inspection = matrix(
+  0,
+  nrow = sum(ncrhs[, 1]),
+  ncol = 3
+)
+
+l = 1
+
+for (cell in seq_len(ncells)) {
+  for (j in seq_len(length(clu_chrs_result[[cell]]))) {
+    for (i in seq_len(length(clu_chrs_result[[cell]][[j]]$crhs))) {
+      crhs_inspection[l, 1] =  dim(clu_chrs_result[[cell]][[j]]$crhs[[i]]$mat_incidence)[1]
+      crhs_inspection[l, 2] =  dim(clu_chrs_result[[cell]][[j]]$crhs[[i]]$mat_incidence)[2]
+      crhs_inspection[l, 3] =  paste0("cell ", sprintf("%03d", cell), "- CRH ", i)
+      l = l +  1
+    }
+  }
+}
+
 ########### Sauvegarde des données ###########
 save(clu_chrs_result, file = "rdata/all_rda_data/clu_chrs_result.rda")
 

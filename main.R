@@ -1,7 +1,17 @@
 #################### Etapes de Création de CRHs à partir des structures et des clusters de cellules ####################
 
 # Chargement des librairies
-
+library(tidyverse)
+library(rmarkdown)
+library(rgl)
+library(magick)
+library(randomcoloR)
+library(readr)
+library(RColorBrewer)
+library(finalfit)
+library(knitr)
+library(plotly)
+library(data.table)
 library(stats)
 library(stringr)
 library(FactoMineR)
@@ -11,7 +21,7 @@ library(cluster)
 library(stats)
 library(ggpubr)
 library(igraph)
-library(tidyverse)
+
 
 ### Création des CRHs à partir des structures
 

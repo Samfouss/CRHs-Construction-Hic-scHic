@@ -1,17 +1,3 @@
-# Chargement des librairies
-library(rmarkdown)
-library(rgl)
-library(magick)
-library(randomcoloR)
-library(readr)
-library(tidyverse)
-library(igraph)
-library(ggpubr)
-library(RColorBrewer)
-library(finalfit)
-library(knitr)
-library(plotly)
-library(data.table)
 #knitr::knit_hooks$set(webgl = hook_webgl)
 # On Charge les IDs des promoters deja sauvés
 load("rdata/all_rda_data/promoters_ids.rda")
