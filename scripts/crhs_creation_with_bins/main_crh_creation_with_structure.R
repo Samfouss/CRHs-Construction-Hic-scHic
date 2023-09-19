@@ -86,7 +86,7 @@ ncrhs = 0
 for (bl in 1:16) {
   n = length(all_net_result[[bl]]$crhs)
   for (i in seq_len(n)) {
-    if(sum(all_net_result[[bl]]$crhs[[i]]$mat_incidence) == -1){
+    if(sum(all_net_result[[bl]]$crhs[[i]]$mat_incidence) != -1){
       ncrhs = ncrhs + 1
     }
   }

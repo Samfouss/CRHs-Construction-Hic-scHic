@@ -4,7 +4,7 @@ library("tidyverse")
 # Rapport du 22 08 2022
 
 # construction de la matrice en retirant les CRHs non complexes
-load("rdata/all_net_result.rda")
+load("rdata/all_rda_data/all_net_result.rda")
 all_net_result_complex = all_net_result
 
 for (i in 2:length(all_net_result_complex)) {

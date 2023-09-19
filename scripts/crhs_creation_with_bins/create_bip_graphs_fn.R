@@ -186,6 +186,7 @@ create_bip_graphs <- function(dt_structures, promoters_vec, rep_num, block_vec, 
         # Il y a des blocks qui ont des promoteurs par contre aucune bille n'est connetées à ce promoteur
         
         if(length(res[[b]]$crhs)>l1){
+          names(res[[b]]$crhs) = str_c("crh", 1:length(res[[b]]$crhs))
           
           res[[b]]$more_info[[l2+1]] = list(
             "dist_bin" = compute_dist_bin,
@@ -195,40 +196,46 @@ create_bip_graphs <- function(dt_structures, promoters_vec, rep_num, block_vec, 
             "no_bip" = net_components_bip$no
           )
           
-        }else{
-          
-          res[[b]]$crhs[[l1+1]] = list(
-            "name" = str_c("( ", cell_number, "|", rep_num, ", ", i, ", ", resolution_, " )"),
-            "mat_incidence" = -1
-          )
-          
-          res[[b]]$more_info[[l2+1]] = list(
-            "dist_bin" = -1,
-            "net_to_plot" = -1,
-            "membership_bip" = -1,
-            "csize_bip" = -1,
-            "no_bip" = -1
-          )
-          
         }
         
-      }else{
-        l1 = length(res[[b]]$crhs)
-        l2 = length(res[[b]]$more_info)
+        # else{
+        #   
+        #   res[[b]]$crhs[[l1+1]] = list(
+        #     "name" = str_c("( ", cell_number, "|", rep_num, ", ", i, ", ", resolution_, " )"),
+        #     "mat_incidence" = -1
+        #   )
+        #   
+        #   res[[b]]$more_info[[l2+1]] = list(
+        #     "dist_bin" = -1,
+        #     "net_to_plot" = -1,
+        #     "membership_bip" = -1,
+        #     "csize_bip" = -1,
+        #     "no_bip" = -1
+        #   )
+        #   
+        #   names(res[[b]]$crhs) = str_c("crh", 1:length(res[[b]]$crhs))
+        # }
         
-        res[[b]]$crhs[[l1+1]] = list(
-          "name" = str_c("( ", cell_number, "|", rep_num, ", ", i, ", ", resolution_, " )"),
-          "mat_incidence" = -1
-        )
-        
-        res[[b]]$more_info[[l2+1]] = list(
-          "dist_bin" = -1,
-          "net_to_plot" = -1,
-          "membership_bip" = -1,
-          "csize_bip" = -1,
-          "no_bip" = -1
-        )
       }
+      
+      # else{
+      #   l1 = length(res[[b]]$crhs)
+      #   l2 = length(res[[b]]$more_info)
+      #   
+      #   res[[b]]$crhs[[l1+1]] = list(
+      #     "name" = str_c("( ", cell_number, "|", rep_num, ", ", i, ", ", resolution_, " )"),
+      #     "mat_incidence" = -1
+      #   )
+      #   
+      #   res[[b]]$more_info[[l2+1]] = list(
+      #     "dist_bin" = -1,
+      #     "net_to_plot" = -1,
+      #     "membership_bip" = -1,
+      #     "csize_bip" = -1,
+      #     "no_bip" = -1
+      #   )
+      #   names(res[[b]]$crhs) = str_c("crh", 1:length(res[[b]]$crhs))
+      # }
       
     }
   }
@@ -238,25 +245,25 @@ create_bip_graphs <- function(dt_structures, promoters_vec, rep_num, block_vec, 
 }
 
 
-# cell = 1
-# chr = 1
-# all_net_result <- create_bip_graphs(
-#   as_tibble(
-#     all_paired_structure%>%
-#       filter(
-#         paire == str_c(chr, sprintf("%03d", cell))
-#       )%>%
-#       select(-c(ends_with("_c"), "paire"))%>%
-#       mutate(
-#         ID = paste0("B", sprintf("%02d", X4), sprintf("%04d", 1:n()))
-#       )
-#   ),
-#   promoters_ids, 
-#   chr, 
-#   1:16, 
-#   3,
-#   sprintf("%03d", cell)
-# )
+cell = 1
+chr = 1
+all_net_result <- create_bip_graphs(
+  as_tibble(
+    all_paired_structure%>%
+      filter(
+        paire == str_c(chr, sprintf("%03d", cell))
+      )%>%
+      select(-c(ends_with("_c"), "paire"))%>%
+      mutate(
+        ID = paste0("B", sprintf("%02d", X4), sprintf("%04d", 1:n()))
+      )
+  ),
+  promoters_ids,
+  chr,
+  1:16,
+  3,
+  sprintf("%03d", cell)
+)
 
 
 
