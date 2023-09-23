@@ -8,31 +8,24 @@ load("rdata/all_rda_data/all_net_result.rda")
 all_net_result_complex = all_net_result
 
 for (i in 2:length(all_net_result_complex)) {
-  
   for (k in seq_len(length(all_net_result_complex[[i]]$crhs))) {
     mat = all_net_result_complex[[i]]$crhs[[k]]$mat_incidence
     
     # Identification des CRHs moins complex
     if((nrow(mat) == 1 & ncol(mat) == 1) | (nrow(mat) == 2 & ncol(mat) == 1) | (nrow(mat) == 1 & ncol(mat) == 2)){
-      all_net_result_complex[[i]]$crhs[[k]] <- -1
-      all_net_result_complex[[i]]$resume_fusion[k] <- "-1"
-      # if(i == 3){
-      #   print(paste(nrow(mat), " - ", ncol(mat)))
-      # }
+      all_net_result_complex[[i]]$crhs[[k]]$mat_incidence <- -1
+      all_net_result_complex[[i]]$more_info <- "-1"
     }
   }
 }
 
 # Compter le nombre de CRHs retenu
-
 nb_crhs = 0
 block_len = 0
 for (bl in 2:16) {
   b = 0
   for (i in seq_len(length(all_net_result_complex[[bl]]$crhs))) {
-    
-    if(length(all_net_result_complex[[bl]]$crhs[[i]])>1){
-      
+    if(sum(all_net_result_complex[[bl]]$crhs[[i]]$mat_incidence) != -1){
       b = b + 1
     }
   }
@@ -43,9 +36,11 @@ for (bl in 2:16) {
 
 nb_crhs
 block_len
+save(all_net_result_complex, file ="rdata/all_rda_data/all_net_result_complex.rda")
 
 # Est ce qu'un CRHs est inclus dans l'autre après degenerescence ?
-load("rdata/all_net_result_complex.rda")
+load("rdata/all_rda_data/all_net_result_complex.rda")
+
 # Etape 3 : fonction permettant de faire la réduction de matrices
 source("scripts/crhs_comparaison/degenerationMatrix_fn.R")
 
@@ -62,7 +57,7 @@ for (bl in 2:16) {
   index = 0
   # Identification des matrices complexes dans la liste des CRHs
   for (k in seq_len(length(all_net_result_complex[[bl]]$crhs))) {
-    if(length(all_net_result_complex[[bl]]$crhs[[k]])>1){
+    if(sum(all_net_result_complex[[bl]]$crhs[[k]]$mat_incidence) != -1){
       complex_crh[index] = k
       index = index + 1
     }
@@ -125,14 +120,14 @@ crhs_struc_fusion = crhs_struc_fusion[crhs_struc_fusion[, 1]!= 0, ]
 summary(crhs_struc_fusion[, 4])
 
 ########### Sauvegarde des résulats sur les paires de CRHs qui se chevauchent ##########
-save(crhs_struc_fusion, file = "rdata/crhs_struc_fusion.rda")
+save(crhs_struc_fusion, file = "rdata/all_rda_data/crhs_struc_fusion.rda")
 
 
 ################################ Fusion des CRHs qui se chevauchent ##########################################"
 
 
 ########### Sauvegarde des résulats sur les paires de CRHs qui se chevauchent ##########
-load("rdata/crhs_struc_fusion.rda")
+load("rdata/all_rda_data/crhs_struc_fusion.rda")
 
 all_net_result_complex_ = all_net_result_complex
 unique_crhs = unique(crhs_struc_fusion[, 1])
@@ -143,7 +138,7 @@ for (bl in unique_crhs) {
   
   crh_to_remove = sort(unique(block[block[, 4]==1, 5]))
   for (i in crh_to_remove) {
-    all_net_result_complex_[[bl]]$crhs[[i]] = -1
+    all_net_result_complex_[[bl]]$crhs[[i]]$mat_incidence = -1
   }
 }
 
@@ -153,7 +148,7 @@ for (bl in 2:16) {
   b = 0
   for (i in seq_len(length(all_net_result_complex_[[bl]]$crhs))) {
     
-    if(length(all_net_result_complex_[[bl]]$crhs[[i]])>1){
+    if(sum(all_net_result_complex_[[bl]]$crhs[[i]]$mat_incidence) != -1){
       all_net_result_complex_[[bl]]$crhs[[i]]$mat_incidence = degenerationMatrix(all_net_result_complex_[[bl]]$crhs[[i]]$mat_incidence)
       b = b + 1
     }
