@@ -212,7 +212,7 @@ nb_crhs
 nb_crhs = 0
 for (bl in 2:16) {
   for (i in seq_len(length(all_net_result_complex_[[bl]]$crhs))) {
-    if(length(all_net_result_complex_[[bl]]$crhs[[i]])>1){
+    if(sum(all_net_result_complex_[[bl]]$crhs[[i]]$mat_incidence)!= -1){
       nb_crhs = nb_crhs + 1
     }
   }
@@ -220,10 +220,10 @@ for (bl in 2:16) {
 nb_crhs
 
 ########### Sauvegarde des données ###########
-save(all_net_result_complex, file = "rdata/all_net_result_complex.rda")
+save(all_net_result_complex, file = "rdata/all_rda_data/all_net_result_complex.rda")
 
 ########### Sauvegarde des résulats sur les CRHs complexes fusionnés ###############
-save(all_net_result_complex_, file = "rdata/all_net_result_complex_.rda")
+save(all_net_result_complex_, file = "rdata/all_rda_data/all_net_result_complex_.rda")
 
 ##### Les CRHs avant degenerescance #########
 
@@ -237,7 +237,7 @@ l = 1
 
 for (bl in 2:16) {
   for (i in seq_len(length(all_net_result_complex[[bl]]$crhs))) {
-    if(length(all_net_result_complex[[bl]]$crhs[[i]])>1){
+    if(sum(all_net_result_complex[[bl]]$crhs[[i]]$mat_incidence)!=-1){
       crhs_inspection_[l, 1] =  dim(all_net_result_complex[[bl]]$crhs[[i]]$mat_incidence)[1]
       crhs_inspection_[l, 2] =  dim(all_net_result_complex[[bl]]$crhs[[i]]$mat_incidence)[2]
       crhs_inspection_[l, 3] =  paste0("Block ", bl, "- CRH ", i)
@@ -264,7 +264,7 @@ l = 1
 
 for (bl in 2:16) {
   for (i in seq_len(length(all_net_result_complex_[[bl]]$crhs))) {
-    if(length(all_net_result_complex_[[bl]]$crhs[[i]])>1){
+    if(sum(all_net_result_complex_[[bl]]$crhs[[i]]$mat_incidence)!=-1){
       crhs_inspection[l, 1] =  dim(all_net_result_complex_[[bl]]$crhs[[i]]$mat_incidence)[1]
       crhs_inspection[l, 2] =  dim(all_net_result_complex_[[bl]]$crhs[[i]]$mat_incidence)[2]
       crhs_inspection[l, 3] =  paste0("Block ", bl, "- CRH ", i)

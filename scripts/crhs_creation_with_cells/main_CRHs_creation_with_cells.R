@@ -1,12 +1,4 @@
-# Chargement des librairies
-library(igraph)
-library(dplyr)
-library(stringr)
-library(stats)
-library(data.table)
-library(tidyverse)
-library(IRanges)
-library(readr)
+load("rdata/all_rda_data/scHic_promoters_ids.rda")
 
 # Etape 1 : Transformation des données des matrices scHic
 # source("scripts/crhs_creation_with_cells/getMatrixUperDataAndSave.R")

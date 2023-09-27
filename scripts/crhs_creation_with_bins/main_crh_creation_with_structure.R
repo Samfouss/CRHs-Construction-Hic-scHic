@@ -51,7 +51,8 @@ for (r in 1:nb_replicas) {
       chr, 
       1:16, 
       3,
-      sprintf("%03d", cell)
+      sprintf("%03d", cell), 
+      resolution="2Mb"
     )
     
   }else{

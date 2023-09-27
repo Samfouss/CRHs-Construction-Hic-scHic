@@ -2,6 +2,10 @@
 
 # Chargement des librairies
 library(tidyverse)
+library(dplyr)
+library(data.table)
+library(IRanges)
+library(readr)
 library(rmarkdown)
 library(rgl)
 library(magick)
