@@ -52,7 +52,7 @@ for (r in 1:nb_replicas) {
       1:16, 
       3,
       sprintf("%03d", cell), 
-      resolution="2Mb"
+      resolution="6Mb"
     )
     
   }else{
