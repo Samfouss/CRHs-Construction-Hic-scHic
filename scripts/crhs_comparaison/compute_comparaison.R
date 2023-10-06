@@ -100,7 +100,7 @@ compute_comparaison <- function(all_net_result, clu_chrs_result, make_degenerati
               # colmat_ = intersect(colnames(mat), colnames(mat_degeneration))
               
               mat_degeneration_redim <- matrix(
-                0,
+                -1,
                 ncol=length(colmat), 
                 nrow=length(rowmat), 
                 dimnames=list(rowmat, colmat)
