@@ -22,6 +22,8 @@ nb_replicas = length(unique(all_paired_structure$paire))
 # La boucle ira de 1 à 500
 #nb_replicas = 50
 
+res = "6Mb"
+
 for (r in 1:nb_replicas) {
   
   print(r)
@@ -34,8 +36,8 @@ for (r in 1:nb_replicas) {
   
   # Initialisation du premier cluster
   if(r==1){
-    print(cell)
-    print(chr)
+    # print(cell)
+    # print(chr)
     all_net_result <- create_bip_graphs(
       as_tibble(
         all_paired_structure%>%
@@ -52,7 +54,7 @@ for (r in 1:nb_replicas) {
       1:16, 
       3,
       sprintf("%03d", cell), 
-      resolution="6Mb"
+      resolution=res
     )
     
   }else{
@@ -67,7 +69,15 @@ for (r in 1:nb_replicas) {
     )
     
     print("Cluster")
-    net <- create_bip_graphs(structure, promoters_ids, chr, 1:16, 3, sprintf("%03d", cell))
+    net <- create_bip_graphs(
+      structure, 
+      promoters_ids, 
+      chr, 
+      1:16, 
+      3, 
+      sprintf("%03d", cell), 
+      resolution=res
+    )
     
     print("Overlap")
     overlap_edge <- edge_identity_overlap(
@@ -83,6 +93,12 @@ for (r in 1:nb_replicas) {
   
 }
 
+all_net_result_6Mb = all_net_result
+
+save(all_net_result_6Mb, file = "rdata/all_rda_data/all_net_result_6Mb.rda")
+
+
+load("rdata/all_rda_data/all_net_result.rda")
 ncrhs = 0
 for (bl in 1:16) {
   print(length(all_net_result[[bl]]$crhs))

@@ -37,7 +37,7 @@ bip_graphs_fusion <- function(structure_net_comp1, structure_net_comp2, edge_ove
     nb_crh2 = length(structure_net_comp2[[b]]$crhs)
     
     paires.crh <- edge_overlap_result[[b]]$chev_edge_comp
-    print(paires.crh)
+    # print(paires.crh)
     # On boucle sur les CRHs à apparier
     
     rest_add1 = seq_len(nb_crh1)
