@@ -22,7 +22,7 @@ nb_replicas = length(unique(all_paired_structure$paire))
 # La boucle ira de 1 à 500
 #nb_replicas = 50
 
-res = "6Mb"
+res = "2Mb"
 
 for (r in 1:nb_replicas) {
   
@@ -93,12 +93,15 @@ for (r in 1:nb_replicas) {
   
 }
 
+all_net_result_2Mb = all_net_result
+
+save(all_net_result_2Mb, file = "rdata/all_rda_data/all_net_result_2Mb.rda")
+
 all_net_result_6Mb = all_net_result
 
-save(all_net_result_6Mb, file = "rdata/all_rda_data/all_net_result_6Mb.rda")
+save(all_net_result_2Mb, file = "rdata/all_rda_data/all_net_result_6Mb.rda")
 
 
-load("rdata/all_rda_data/all_net_result.rda")
 ncrhs = 0
 for (bl in 1:16) {
   print(length(all_net_result[[bl]]$crhs))

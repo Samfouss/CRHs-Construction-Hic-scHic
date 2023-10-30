@@ -1,3 +1,5 @@
+load("rdata/all_rda_data/crhs_comparation_res.rda")
+
 # Inspection des résultats
 
 nb_crhs_in_clus = dim(crhs_comparation_res$specificity_mat)[2]
@@ -50,11 +52,15 @@ highest_sen <- matrix(
   nrow = nb_crh_in_struc,
   ncol = 3,
 )
+
+sen_mat = crhs_comparation_res$sensibility_mat
+sen_mat[is.na(sen_mat)] = 0
+
 for (res in seq_len(nb_crh_in_struc)){
   # sum(fireCaller_result[[res]]$FIRE_output$Mousse_cells_clus_12_indicator)
-  highest_sen[res, 1] <- names(crhs_comparation_res$sensibility_mat[, 1][res])
-  highest_sen[res, 2] <- names(which.max(crhs_comparation_res$sensibility_mat[res, ]))
-  highest_sen[res, 3] <- max(crhs_comparation_res$sensibility_mat[res, ])
+  highest_sen[res, 1] <- names(sen_mat[, 1][res])
+  highest_sen[res, 2] <- names(which.max(sen_mat[res, ]))
+  highest_sen[res, 3] <- max(sen_mat[res, ])
 }
 
 highest_sen_ = as.numeric(highest_sen[, 3])

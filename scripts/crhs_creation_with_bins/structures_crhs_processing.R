@@ -4,8 +4,8 @@ library("tidyverse")
 # Rapport du 22 08 2022
 
 # construction de la matrice en retirant les CRHs non complexes
-load("rdata/all_rda_data/all_net_result.rda")
-all_net_result_complex = all_net_result
+load("rdata/all_rda_data/all_net_result_2Mb.rda")
+all_net_result_complex = all_net_result_2Mb
 
 for (i in 2:length(all_net_result_complex)) {
   for (k in seq_len(length(all_net_result_complex[[i]]$crhs))) {
@@ -36,10 +36,7 @@ for (bl in 2:16) {
 
 nb_crhs
 block_len
-save(all_net_result_complex, file ="rdata/all_rda_data/all_net_result_complex.rda")
 
-# Est ce qu'un CRHs est inclus dans l'autre après degenerescence ?
-load("rdata/all_rda_data/all_net_result_complex.rda")
 
 # Etape 3 : fonction permettant de faire la réduction de matrices
 source("scripts/crhs_comparaison/degenerationMatrix_fn.R")
@@ -53,6 +50,9 @@ crhs_struc_fusion = matrix(
 l = 1
 
 for (bl in 2:16) {
+  if(l%%10000==0){
+    print(paste0("Nous sommes a la ligne : ", l))
+  }
   complex_crh = vector(mode = "numeric", length = length(all_net_result_complex[[bl]]$crhs))
   index = 0
   # Identification des matrices complexes dans la liste des CRHs
@@ -121,6 +121,7 @@ summary(crhs_struc_fusion[, 4])
 
 ########### Sauvegarde des résulats sur les paires de CRHs qui se chevauchent ##########
 save(crhs_struc_fusion, file = "rdata/all_rda_data/crhs_struc_fusion.rda")
+save(all_net_result_complex, file ="rdata/all_rda_data/all_net_result_complex.rda")
 
 
 ################################ Fusion des CRHs qui se chevauchent ##########################################"

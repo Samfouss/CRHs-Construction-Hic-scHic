@@ -1,5 +1,3 @@
-
-
 ## Cette fonction permet de faire la comparaison entre les CRHs et donne les statistiques
 
 compute_comparaison <- function(all_net_result, clu_chrs_result, make_degeneration = TRUE){
@@ -45,19 +43,21 @@ compute_comparaison <- function(all_net_result, clu_chrs_result, make_degenerati
       nrow = matLines,
       ncol = matCol,
       dimnames = list(row_names, col_names)
-    ),
-    "noeuds_mat" = matrix(
-      0,
-      nrow = matLines,
-      ncol = matCol,
-      dimnames = list(row_names, col_names)
-    ),
-    "arretes_mat" = matrix(
-      0,
-      nrow = matLines,
-      ncol = matCol,
-      dimnames = list(row_names, col_names)
     )
+    # ,
+    # "noeuds_mat" = matrix(
+    #   0,
+    #   nrow = matLines,
+    #   ncol = matCol,
+    #   dimnames = list(row_names, col_names)
+    # )
+    # ,
+    # "arretes_mat" = matrix(
+    #   0,
+    #   nrow = matLines,
+    #   ncol = matCol,
+    #   dimnames = list(row_names, col_names)
+    # )
   )
   
   col = 0
@@ -118,7 +118,7 @@ compute_comparaison <- function(all_net_result, clu_chrs_result, make_degenerati
               crhs_comparation_res$specificity_mat[ln, col] = sum(mat_degeneration_redim[mat_redim==mat_degeneration_redim]==0)/sum(mat_degeneration_redim==0)
               
               # On reconstruit ici le réseau afin d'avoir le nombre de noeuds et d'arretes pour la comparaison
-              net_bip_struc <- graph_from_incidence_matrix(mat_degeneration)
+              # net_bip_struc <- graph_from_incidence_matrix(mat_degeneration)
               
               # On s'attends à avoir un pourcentage de recupération réduit à (nombre de cellules dans le cluster*Nombre de billes dans le bac)
               # crhs_comparation_res$recovery_mat[ln, col] = (length(V(net_bip_clus))/length(V(net_bip_struc)) + length(E(net_bip_clus))/length(E(net_bip_struc)))/2
