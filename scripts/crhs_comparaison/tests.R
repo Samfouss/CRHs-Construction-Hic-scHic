@@ -87,6 +87,37 @@ c = row.names(mat2)[row.names(mat2) %in% row.names(mat1)]
 l = colnames(mat2)[colnames(mat2) %in% colnames(mat1)]
 View(mat1[c, l])
 
+#############################
+load("rdata/all_rda_data/crhs_comparaison_res.rda")
+load("rdata/all_rda_data/all_net_result_complex_3Mb_.rda")
+# Inspection des résultats
+specif = crhs_comparaison_res$specificity_mat
+
+nb_crhs_in_clus = dim(specif)[2]
+nb_crh_in_struc = dim(specif)[1]
+line_name = row.names(specif)
+specif_NA_mat_res = matrix(0, nrow = length(line_name), ncol = 3)
+
+l1 = 1
+for (l in seq_len(nb_crh_in_struc)) {
+  line_data = specif[l, ]
+  name = line_name[l]
+  if(all(is.na(line_data))){
+    bl = as.numeric(str_split_1(name, "_")[2])
+    crh = as.numeric(str_split_1(name, "_")[4])
+    mat = all_net_result_complex_[[bl]]$crhs[[crh]]$mat_incidence
+    if(all(mat==1)){specif_NA_mat_res[l1, 1] = 1}
+    specif_NA_mat_res[l1, 2] = nrow(mat)
+    specif_NA_mat_res[l1, 3] = ncol(mat)
+    l1 = l1 + 1
+  }
+}
+
+specif_NA_mat_res = specif_NA_mat_res[specif_NA_mat_res[, 1]!=0, ]
+
+save(specif_NA_mat_res, file = "rdata/all_rda_data/specif_NA_mat_res.rda")
+
+
 
 
 
