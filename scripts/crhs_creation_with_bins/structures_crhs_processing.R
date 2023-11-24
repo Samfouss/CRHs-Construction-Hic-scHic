@@ -5,7 +5,9 @@ library("tidyverse")
 
 # construction de la matrice en retirant les CRHs non complexes
 load("rdata/all_rda_data/all_net_result_2Mb.rda")
-all_net_result_complex = all_net_result_2Mb
+load("rdata/all_rda_data/all_net_result_3Mb.rda")
+load("rdata/all_rda_data/all_net_result_6Mb.rda")
+all_net_result_complex = all_net_result_3Mb
 
 for (i in 2:length(all_net_result_complex)) {
   for (k in seq_len(length(all_net_result_complex[[i]]$crhs))) {

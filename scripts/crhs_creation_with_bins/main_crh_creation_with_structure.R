@@ -22,8 +22,8 @@ nb_replicas = length(unique(all_paired_structure$paire))
 # La boucle ira de 1 à 500
 #nb_replicas = 50
 
-res = "2Mb"
-
+res = "3Mb"
+seuil = 0.5
 for (r in 1:nb_replicas) {
   
   print(r)
@@ -41,9 +41,7 @@ for (r in 1:nb_replicas) {
     all_net_result <- create_bip_graphs(
       as_tibble(
         all_paired_structure%>%
-          filter(
-            paire == str_c(chr, sprintf("%03d", cell))
-          )%>%
+          filter(paire == str_c(chr, sprintf("%03d", cell)))%>%
           select(-c(ends_with("_c"), "paire"))%>%
           mutate(
             ID = paste0("B", sprintf("%02d", X4), sprintf("%04d", 1:n()))
@@ -83,7 +81,7 @@ for (r in 1:nb_replicas) {
     overlap_edge <- edge_identity_overlap(
       net, 
       all_net_result,
-      0.5
+      seuil = seuil
     )
     
     print("Fusion")
@@ -93,15 +91,17 @@ for (r in 1:nb_replicas) {
   
 }
 
-all_net_result_2Mb = all_net_result
-
-save(all_net_result_2Mb, file = "rdata/all_rda_data/all_net_result_2Mb.rda")
-
-all_net_result_6Mb = all_net_result
-
-save(all_net_result_2Mb, file = "rdata/all_rda_data/all_net_result_6Mb.rda")
 
 
+if(res=="2Mb"){
+  save(all_net_result, file = "rdata/all_rda_data/all_net_result_2Mb.rda")
+}else if(res=="3Mb"){
+  save(all_net_result, file = "rdata/all_rda_data/all_net_result_3Mb.rda")
+}else{
+  save(all_net_result, file = "rdata/all_rda_data/all_net_result_6Mb.rda")
+}
+
+load("rdata/all_rda_data/all_net_result_3Mb.rda")
 ncrhs = 0
 for (bl in 1:16) {
   print(length(all_net_result[[bl]]$crhs))
@@ -109,11 +109,7 @@ for (bl in 1:16) {
 }
 ncrhs
 
-print(all_net_result$block1$resume_fusion)
-
-# Sauve les données dans l'objet suivant
-save(all_net_result, file = "rdata/all_rda_data/all_net_result.rda")
-
+# print(all_net_result$block1$resume_fusion)
 # library(openxlsx)
 # write.xlsx(
 #   data.frame(
@@ -121,5 +117,5 @@ save(all_net_result, file = "rdata/all_rda_data/all_net_result.rda")
 #   ), 
 #   file = "rdata/fusion_250_paires_block_1.xlsx"
 # )
-
+  
 

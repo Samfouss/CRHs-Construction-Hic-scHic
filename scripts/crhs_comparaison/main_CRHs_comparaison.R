@@ -2,6 +2,7 @@
 
 # Etape 1 : Chargement des CRHs obtenus a partir des structures dites complexes et après elimination des réseaux redondants
 load("rdata/all_rda_data/all_net_result_complex_.rda")
+load("rdata/all_rda_data/all_net_result_complex_2Mb_.rda")
 #load("rdata/all_rda_data/all_net_result_complex.rda")
 
 # Etape 2 : Chargement des CRHs obtenus à partir des clusters
@@ -21,5 +22,5 @@ crhs_comparation_res = compute_comparaison(all_net_result_complex_, clu_chrs_res
 
 
 ########### Sauvegarde des données ###########
-save(crhs_comparation_res, file = paste0("rdata/all_rda_data/crhs_comparation_res_", nb_clusters, ".rda"))
+save(crhs_comparation_res, file = paste0("rdata/all_rda_data/crhs_comparation_res.rda"))
 

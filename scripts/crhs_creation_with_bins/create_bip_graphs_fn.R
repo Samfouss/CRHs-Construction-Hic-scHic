@@ -144,9 +144,9 @@ create_bip_graphs <- function(dt_structures, promoters_vec, rep_num, block_vec, 
           compute_dist_bin
         )
         
-        net_bip <- simplify(net_bip, remove.multiple = FALSE, remove.loops = TRUE)
-        # net <- simplify(net, remove.multiple = FALSE, remove.loops = TRUE)
-        
+        if(!is_simple(net_bip)){
+          net_bip <- simplify(net_bip, remove.multiple = FALSE, remove.loops = TRUE)
+        }
         net_components_bip <- components(net_bip, mode = c("weak", "strong"))
         # net_components <- components(net, mode = c("weak", "strong"))
         #biggest_cluster <- which.max(net_components$csize)
