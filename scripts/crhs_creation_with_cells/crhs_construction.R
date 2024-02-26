@@ -1,7 +1,16 @@
 
 # Chargement des données sur les clusters
+# Chargement des données du cas édéal
+load("rdata/all_rda_data/ideal_clusters_matrix.rda")
+cluster_matrix_result = clusters_matrix
+names(cluster_matrix_result) <- paste0("mat.inc.cluster_", seq_len(length(cluster_matrix_result)))
+
+nb_clusters = 25
+load(paste0("rdata/all_rda_data/merge_loops_clus_", nb_clusters, ".rda"))
 load("rdata/all_rda_data/cluster_matrix_result.rda")
 source("./scripts/crhs_creation_with_cells/create_graph_from_cells_fn.R")
+
+cluster_matrix_result = merge_loops_clus
 
 clus_num = c()
 for (cell in names(cluster_matrix_result)) {
@@ -30,6 +39,7 @@ resolution = "3Mb"
 clu_chrs_result <- get_clusters_crhs(cluster_matrix_result, resolution = resolution)
 
 ############## Distribution des crhs ##########
+load("rdata/all_rda_data/clu_chrs_result_3Mb.rda")
 ncrhs <- matrix(
   0,
   nrow = length(clu_chrs_result),
@@ -59,6 +69,11 @@ for (cell in seq_len(ncells)) {
     l = l +  1
   }
 }
+
+crhs_inspection
+
+summary(as.numeric(crhs_inspection[, 1]))
+summary(as.numeric(crhs_inspection[, 2]))
 
 plot(
   table(as.numeric(crhs_inspection[, 1])),
@@ -119,6 +134,8 @@ plot(
 ## ================================================ Retenir les CRHs complexes ===========
 
 ########### Sauvegarde des données ###########
+save(clu_chrs_result, file = "rdata/all_rda_data/ideal_clu_chrs_result_3Mb.rda")
+
 if(resolution=="2Mb"){
   save(clu_chrs_result, file = "rdata/all_rda_data/clu_chrs_result_2Mb.rda")
 }else if(resolution=="3Mb"){
@@ -126,3 +143,5 @@ if(resolution=="2Mb"){
 }else{
   save(clu_chrs_result, file = "rdata/all_rda_data/clu_chrs_result_6Mb.rda")
 }
+
+

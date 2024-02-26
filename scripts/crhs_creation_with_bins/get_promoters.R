@@ -1,6 +1,6 @@
 ## Installation de bioconductor si c'est pas le cas sur la machine
-# if (!require("BiocManager", quietly = TRUE))
-#   install.packages("BiocManager")
+if (!require("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
 
 ## Installation des packages dont on aura probablement besoin
 # BiocManager::install("IRanges")

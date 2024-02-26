@@ -7,21 +7,21 @@ load("rdata/all_rda_data/promoters_ids.rda")
 load("rdata/all_rda_data/all_single_structure.rda")
 load("rdata/all_rda_data/all_paired_structure.rda")
 
-# structure_1 <- as_tibble(
-#   all_paired_structure%>%
-#     filter(paire == str_c(1, sprintf("%03d", 1)))%>%
-#     select(-c(ends_with("_c"), "paire"))%>%
-#     mutate(
-#       ID = paste0("B", sprintf("%02d", X4), sprintf("%04d", 1:n()))
-#     )
-# )
-# 
-# structure_2 <- as_tibble(
-#   all_paired_structure%>%
-#     filter(paire == str_c(2, sprintf("%03d", 1)))%>%
-#     select(-c(ends_with("_c"), "paire"))%>%
-#     mutate(
-#       ID = paste0("B", sprintf("%02d", X4), sprintf("%04d", 1:n()))
-#     )
-# )
+structure_1 <- as_tibble(
+  all_paired_structure%>%
+    filter(paire == str_c(1, sprintf("%03d", 1)))%>%
+    select(-c(ends_with("_c"), "paire"))%>%
+    mutate(
+      ID = paste0("B", sprintf("%02d", X4), sprintf("%04d", 1:n()))
+    )
+)
+
+structure_2 <- as_tibble(
+  all_paired_structure%>%
+    filter(paire == str_c(2, sprintf("%03d", 1)))%>%
+    select(-c(ends_with("_c"), "paire"))%>%
+    mutate(
+      ID = paste0("B", sprintf("%02d", X4), sprintf("%04d", 1:n()))
+    )
+)
 

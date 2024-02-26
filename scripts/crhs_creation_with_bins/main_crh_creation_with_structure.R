@@ -9,9 +9,9 @@ source("./scripts/crhs_creation_with_bins/fusionne_replicats_fn.R")
 # promoters_ids[which(promoters_ids<341)]
 # 
 # # Un petit resumé du nombre de promoters par bloc
-# table(structure_1[promoters_ids, ]$X4)
-# table(structure_2[promoters_ids, ]$X4)
-# table(structure_3[promoters_ids, ]$X4)
+table(structure_1[promoters_ids, ]$X4)
+table(structure_2[promoters_ids, ]$X4)
+table(structure_3[promoters_ids, ]$X4)
 
 ######################### Creation des CRHs #########################
 

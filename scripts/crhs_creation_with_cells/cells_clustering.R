@@ -1,3 +1,7 @@
+library(ggpubr)
+library(factoextra)
+
+
 
 source("scripts/crhs_creation_with_cells/juicerInputFileCreation_fn.R")
 
@@ -39,7 +43,7 @@ cells_lustering <- function(dataToUse = "ideal_rep_data", clustering_meth = "KMe
       cellUperDiagData,
       nb_cluster,
       algorithm = kmeans_algo,
-      iter.max = 50,
+      iter.max = 100,
       trace=FALSE
     )
     print(cells_clusters$size)
@@ -98,4 +102,7 @@ cells_lustering <- function(dataToUse = "ideal_rep_data", clustering_meth = "KMe
 #   print(dim(dtl))
 #   print(summary(dtl[, 9]))
 # }
+
+
+
 

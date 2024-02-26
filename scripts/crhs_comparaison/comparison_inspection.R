@@ -1,6 +1,8 @@
 library(ggplot2)
 
 load("rdata/all_rda_data/crhs_comparaison_res.rda")
+
+load("rdata/all_rda_data/ideal_crhs_comparaison_res.rda")
 # Inspection des résultats
 
 nb_crhs_in_clus = dim(crhs_comparaison_res$specificity_mat)[2]
@@ -39,9 +41,9 @@ plot(
 )
 hist(
   highest_spec_,
-  ylab = "Spécificité",
-  xlab = "Nombre de CRHs",
-  main = "Hitogramme des spécificités"
+  xlab = "Spécificité",
+  ylab = "Nombre de CRHs",
+  main = ""
 )
 boxplot(highest_spec_, horizontal = TRUE)
 summary(highest_spec_)
@@ -71,8 +73,8 @@ l = 1
 for (res in seq_len(nb_crh_in_struc)){
   # sum(fireCaller_result[[res]]$FIRE_output$Mousse_cells_clus_12_indicator)
   if(!all(is.na(sen_mat[res, ]))){
-    highest_sen[res, 1] <- names(sen_mat[, 1][res])
-    highest_sen[res, 2] <- names(which.max(sen_mat[res, ]))
+    highest_sen[l, 1] <- names(sen_mat[, 1][res])
+    highest_sen[l, 2] <- names(which.max(sen_mat[res, ]))
     highest_sen[l, 3] <- max(sen_mat[res, ][!is.na(sen_mat[res, ])])
     l = l + 1
   }
@@ -89,17 +91,20 @@ plot(
   type = "l",
   ylab = "Sensibilité",
   xlab = "Nombre de CRHs",
-  col="gray"
+  #col="gray"
 )
 hist(
   highest_sen_,
-  ylab = "Sensibilité",
-  xlab = "Nombre de CRHs",
-  main = "Hitogramme des sensibilités",
-  col="gray"
+  xlab = "Sensibilité",
+  ylab = "Nombre de CRHs",
+  main = "",
+  #col="gray"
 )
 boxplot(highest_sen_, horizontal = TRUE)
 summary(highest_sen_)
+
+# Calcul de li'intervalle de confiance
+## Borne inférieure
 
 # ggplot(data.frame(data = highest_sen_), aes(x = data)) +
 #   geom_boxplot()+ geom_boxplot(fill="#FC4E07")+ labs(x = "sensibilité", y = "Number of CRHs (Nombre de CRHs)")
@@ -249,4 +254,4 @@ plot(
   ylab = "Nombre d'enhancers"
 )
 
-
+all(crhs_comparaison_res$sensibility_mat==crhs_comparaison_res2$sensibility_mat)

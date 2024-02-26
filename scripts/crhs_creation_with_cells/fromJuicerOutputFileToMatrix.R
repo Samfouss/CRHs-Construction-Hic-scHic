@@ -4,7 +4,7 @@
 merge_loops_clus = list()
 
 ######## Création d'une matrice donnant les régions de chaque bac
-
+nb_clusters = 25
 mat_dim = 562
 start = 109000000
 bins = 2667
