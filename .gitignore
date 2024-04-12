@@ -21,3 +21,4 @@ rdata/cell_folder/*
 rapport*
 RScript_HicImpute
 rdata/juicerOutputFiles/*
+.RDataTmp*

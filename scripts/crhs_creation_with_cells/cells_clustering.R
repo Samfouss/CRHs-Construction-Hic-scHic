@@ -1,6 +1,6 @@
 library(ggpubr)
 library(factoextra)
-
+library(FactoMineR)
 
 
 source("scripts/crhs_creation_with_cells/juicerInputFileCreation_fn.R")
@@ -102,6 +102,31 @@ cells_lustering <- function(dataToUse = "ideal_rep_data", clustering_meth = "KMe
 #   print(dim(dtl))
 #   print(summary(dtl[, 9]))
 # }
+load("rdata/all_rda_data/res.pca.rda")
+
+res.pca <- PCA(cellUperDiagData, graph = FALSE)
+# eig.val <- get_eigenvalue(res.pca)
+# fviz_mca_ind(res.pca, col.ind = "cos2", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), repel = TRUE, ggtheme = theme_minimal())
+ncp_choose = which(res.pca$eig[, 3, drop = FALSE]>=80)[3]
+
+library(FactoMineR)
+library(Rtsne)
+tsne_result <- Rtsne(cellUperDiagData)
+
+load("rdata/all_rda_data/res.tsne.rda")
+
+kmeans(res.tsne$Y, centers = 250)
+res.tsne$Y
+res.tsne$costs
+
+load("rdata/all_rda_data/res.pca.rda")
+ncp_choose = which(res.pca$eig[, 3, drop = FALSE]>=80)[3]
+res.pca$ind
+
+
+
+
+
 
 
 

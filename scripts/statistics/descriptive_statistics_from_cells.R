@@ -79,7 +79,7 @@ for(clus in 1:length(clu_chrs_result)) {
 }
 
 clus_crhs_inspections = clus_crhs_inspections[clus_crhs_inspections$name != "", ]
-view(clus_crhs_inspections)
+View(clus_crhs_inspections)
 
 summary(clus_crhs_inspections$nb_edges)
 summary(clus_crhs_inspections$nb_vertices)
@@ -120,6 +120,64 @@ fg2 = ggplot(
 
 figure <- ggarrange(fg1, fg2, ncol = 2, nrow = 1)
 figure
+
+
+load("rdata/all_rda_data/ideal_clu_chrs_result_3Mb.rda")
+
+
+nb = 0
+for (i in seq_len(length(clu_chrs_result))) {
+  nb = nb + length(clu_chrs_result[[i]])
+}
+
+crhs_inspections = matrix(
+  0,
+  nrow = nb,
+  ncol = 4
+)
+
+ln = 1
+
+for(clus in 1:length(clu_chrs_result)) {
+  
+  for (crh in seq_len(length(clu_chrs_result[[clus]]))){
+    crhs_inspections[ln, 1] = nrow(clu_chrs_result[[clus]][[crh]]$mat_incidence)
+    crhs_inspections[ln, 2] = ncol(clu_chrs_result[[clus]][[crh]]$mat_incidence)
+    ln = ln + 1
+  }
+}
+
+summary(crhs_inspections[, 1])
+summary(crhs_inspections[, 2])
+
+load("rdata/all_rda_data/clu_chrs_result_3Mb.rda")
+
+nb = 0
+for (i in seq_len(length(clu_chrs_result))) {
+  nb = nb + length(clu_chrs_result[[i]])
+}
+
+crhs_inspections = matrix(
+  0,
+  nrow = nb,
+  ncol = 4
+)
+
+ln = 1
+
+for(clus in 1:length(clu_chrs_result)) {
+  
+  for (crh in seq_len(length(clu_chrs_result[[clus]]))){
+    crhs_inspections[ln, 1] = nrow(clu_chrs_result[[clus]][[crh]]$mat_incidence)
+    crhs_inspections[ln, 2] = ncol(clu_chrs_result[[clus]][[crh]]$mat_incidence)
+    ln = ln + 1
+  }
+}
+
+
+summary(crhs_inspections[, 1])
+summary(crhs_inspections[, 2])
+
 
 
 
