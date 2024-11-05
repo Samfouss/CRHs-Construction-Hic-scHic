@@ -1,5 +1,6 @@
 library(tidyverse)
 library(ggcharts)
+library(boot)
 
 load("rdata/all_rda_data/all_net_result_complex_3Mb_.rda")
 load("rdata/all_rda_data/clu_chrs_result_3Mb.rda")
@@ -106,6 +107,7 @@ summary(clusters$taille)
 
 load("rdata/all_rda_data/ideal_crhs_comparaison_res.rda")
 
+
 nb_crhs_in_clus = dim(crhs_comparaison_res$specificity_mat)[2]
 nb_crh_in_struc = dim(crhs_comparaison_res$specificity_mat)[1]
 
@@ -160,6 +162,12 @@ for (res in seq_len(nb_crh_in_struc)){
 
 highest_sen = highest_sen[highest_sen[, 1] != "", ]
 highest_sen_ = as.numeric(highest_sen[, 3])
+
+summary(highest_sen_)
+summary(highest_spec_)
+
+dim(crhs_comparaison_res$specificity_mat)
+dim(crhs_comparaison_res$sensibility_mat)
 
 n = length(highest_sen_)
 p = median(highest_sen_)
@@ -233,6 +241,41 @@ spec_IC_inf = p - 1.96*sqrt(p*(1-p)/n)
 spec_IC_inf
 spec_IC_sup = p + 1.96*sqrt(p*(1-p)/n)
 spec_IC_sup
+
+############################################################# Résultats de la validation croisée
+
+library(boot)
+load("rdata/all_rda_data/res_matrix.rda")
+
+all_res = res_matrix[row.names(res_matrix)=="" & !is.na(res_matrix[, 1]), ]
+all_res
+
+summary(all_res[, 3])
+summary(all_res[, 4])
+
+
+
+boot.ci(boot_res, type=c("norm", "basic", "perc"), index = 3)
+boot.ci(boot_res, type=c("norm", "basic", "perc"), index = 4)
+
+
+mean(boot_res$t[, 3])
+mean(boot_res$t[, 4])
+
+
+
+load("rdata/all_rda_data/ideal_boot_res.rda")
+
+mean(boot_res$t[, 3])
+mean(boot_res$t[, 4])
+
+2*boot_res$t0 - colMeans(boot_res$t)
+boot.ci(boot_res, type=c("norm", "basic", "perc"), index = 3)
+boot.ci(boot_res, type=c("norm", "basic", "perc"), index = 4)
+
+
+
+
 
 
 

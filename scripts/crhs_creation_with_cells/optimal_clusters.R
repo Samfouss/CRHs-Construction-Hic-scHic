@@ -530,8 +530,6 @@ for (k in 1:5) {
 for (k in 1:5) {
   for (clus in 200:300) {
     load(paste0("rdata/all_rda_data/cross_validation/cells_clusters_", k, "_", clus,".rda"))
-    print(k)
-    print(clus)
     clus_ass <- cells_clusters$cluster
     clus_ass_dt = umap_dt[names(clus_ass), ]
     silh = silhouette(clus_ass, dist(clus_ass_dt))
@@ -549,11 +547,10 @@ View(clus_selection)
 clus_selection = as.data.frame(clus_selection)
 library(dplyr)
 library(ggplot2)
-colors <- c(1 = "blue", 2 = "red", 3 = "orange", 4 = "red", 5 = "orange")
 
 clus_selection_ = clus_selection%>%
   mutate(
-    `Sous ensemble` = V1,
+    `Sous ensemble` = paste0("Sous-ensemble ", V1),
     `Groupe de cellules` = as.numeric(V2),
     `Méthode` = V3,
     Indice = as.numeric(V4),
@@ -563,15 +560,83 @@ clus_selection_ = clus_selection%>%
 clus_selection_%>%
   filter(`Méthode`=="méthode du coude")%>%
   mutate(
-    `Variance inter` = Indice,
+    `Variance intra` = Indice,
   )%>%
-  ggplot( aes(x=`Groupe de cellules`, y=`Variance inter`, color=`Sous ensemble`,  group = `Sous ensemble`)) +
-  geom_line()
+  ggplot(aes(x=`Groupe de cellules`, y=`Variance intra`)) +
+  geom_line() +
+  facet_wrap(vars(`Sous ensemble`))
 
 clus_selection_%>%
   filter(`Méthode`=="méthode de la silhouette")%>%
   mutate(
     `Score de silhouette` = Indice,
   )%>%
-  ggplot( aes(x=`Groupe de cellules`, y=`Score de silhouette`, color=`Sous ensemble`,  group = `Sous ensemble`)) +
-  geom_line()
+  ggplot( aes(x=`Groupe de cellules`, y=`Score de silhouette`)) +
+  geom_line() +
+  facet_wrap(vars(`Sous ensemble`))
+
+
+
+
+a1[which.max(a1$Indice), ]
+
+a2[which.max(a2$Indice), ]
+
+a3[which.max(a3$Indice), ]
+
+a4[which.max(a4$Indice), ]
+
+a5[which.max(a5$Indice), ]
+
+
+
+
+mu <- 0  # Moyenne
+sigma <- 1  # Écart-type
+mu2 <- 3  # Moyenne
+
+# Générer des valeurs x pour la courbe normale
+x <- seq(-4, 8, length.out = 1000)
+y <- dnorm(x, mean = mu, sd = sigma)
+y2 <- dnorm(x, mean = mu2, sd = sigma)
+plot(x, y, type = "l", col = "blue", lwd = 2, xlab = "Valeurs", ylab = "Densité de probabilité", main = "Superposition de deux courbes normales")
+lines(x, y2, col = "red", lwd = 2)
+polygon(x = c(x, 1, -4), y = c(dnorm(x), 0, 0), col = "blue")
+
+
+curve(expr = dnorm, xlim = c(-4, 4), main = "Densité N(0,1)")
+
+
+
+
+
+curve(expr = dnorm, xlim = c(-4, 4), main = "Densité N(0,1)")
+mu <- 0  # Moyenne
+sigma <- 1  # Écart-type
+
+# Générer des valeurs x pour la courbe normale
+x <- seq(1, 4, length.out = 1000)
+y <- dnorm(x, mean = mu, sd = sigma)
+polygon(x = c(x, 4, 1), y = c(dnorm(x), 0, 0), col = "blue")
+
+
+
+
+
+
+# Définir les paramètres des deux courbes normales
+mu1 <- 0  # Moyenne de la première courbe normale
+sigma1 <- 1  # Écart-type de la première courbe normale
+mu2 <- 2  # Moyenne de la deuxième courbe normale
+sigma2 <- 0.5  # Écart-type de la deuxième courbe normale
+
+# Générer des valeurs x pour les deux courbes normales
+x <- seq(-4, 4, length.out = 100)
+# Calculer les valeurs y correspondantes de la densité de probabilité normale pour chaque courbe
+y1 <- dnorm(x, mean = mu1, sd = sigma1)
+y2 <- dnorm(x, mean = mu2, sd = sigma2)
+
+# Tracer la première courbe normale
+
+# Tracer la deuxième courbe normale en ajoutant la courbe précédente
+

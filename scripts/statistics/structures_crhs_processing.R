@@ -8,6 +8,62 @@ load("rdata/all_rda_data/all_net_result_2Mb.rda")
 load("rdata/all_rda_data/all_net_result_3Mb.rda")
 load("rdata/all_rda_data/all_net_result_6Mb.rda")
 
+# Compter le nombre de CRHs retenu
+nb_crhs = 0
+for (bl in 2:16) {
+  for (i in seq_len(length(all_net_result_3Mb[[bl]]$crhs))) {
+    if(sum(all_net_result_3Mb[[bl]]$crhs[[i]]$mat_incidence) != -1){
+      nb_crhs = nb_crhs + 1
+    }
+  }
+}
+
+nb_crhs
+
+
+crhs_inspection = matrix(
+  0,
+  nrow = nb_crhs,
+  ncol = 3
+)
+
+l = 1
+
+for (bl in 2:16) {
+  for (i in seq_len(length(all_net_result_3Mb[[bl]]$crhs))) {
+    if(sum(all_net_result_3Mb[[bl]]$crhs[[i]]$mat_incidence)!=-1){
+      crhs_inspection[l, 1] =  dim(all_net_result_3Mb[[bl]]$crhs[[i]]$mat_incidence)[1]
+      crhs_inspection[l, 2] =  dim(all_net_result_3Mb[[bl]]$crhs[[i]]$mat_incidence)[2]
+      crhs_inspection[l, 3] =  bl
+      l = l +  1
+    }
+  }
+}
+
+# Premier gros CRH
+crhs_inspection[which.max(as.numeric(crhs_inspection[, 1])), ]
+
+# Deuxième gros CRH
+crhs_inspection[which.max(as.numeric(crhs_inspection[, 2])), ]
+
+data_crhs_inspection = tibble(
+  Promoters = as.numeric(crhs_inspection[, 1]),
+  Enhancers = as.numeric(crhs_inspection[, 2]),
+  blocs = crhs_inspection[, 3]
+)
+
+res1 <- data_crhs_inspection %>% 
+  group_by(blocs) %>% 
+  summarise(
+    count = n(),
+    min_ = min(Enhancers),
+    quart_1 = quantile(Enhancers, probs = 0.25),
+    med = median(Enhancers),
+    mean_ = mean(Enhancers),
+    quart_3 = quantile(Enhancers, probs = 0.75),
+    max_ = max(Enhancers)
+  )
+
 
 
 all_net_result_complex = all_net_result
