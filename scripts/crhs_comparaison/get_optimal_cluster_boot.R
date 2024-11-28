@@ -17,33 +17,6 @@ library(igraph)
 library(NbClust)
 library(boot)
 
-set.seed(99999)
-resolution = "3Mb"
-load("rdata/all_rda_data/umap.out_.rda")
-load("rdata/all_rda_data/cellUperDiagData.rda")
-load("rdata/all_rda_data/scHic_promoters_ids.rda")
-load("rdata/all_rda_data/all_net_result_complex_3Mb_.rda")
-
-nb_cluster = 200:300
-n <- 10000
-umap_dt = umap.out$layout
-
-res_matrix = matrix(NA, nrow =2 , ncol = 4)
-
-indices <- sample(n)
-
-k = 5
-nb_prom = c()
-nb_enhan = c()
-
-r_boot = 1000
-ncpus = 31
-
-# Ici on procède à un shuffle des données
-umap_dt = umap_dt[indices, ]
-cellUperDiagData = cellUperDiagData[indices, ]
-
-
 ##### Fonction permettant de construire les matrices d'incidence
 constr_mat_contacts <- function(cells_clusters, cellUperDiagData, get_incidence_mat=TRUE){
   clusters_matrix <- list()
@@ -156,7 +129,30 @@ create_bip_clust_graph_from_cell <- function(whole_cell_matrix, scHic_promoters_
   }
   crhs_in_resolution
 }
+## Cette fonction permet de faire la comparaison entre les CRHs et donne les statistiques
 
+# extend_matrix_with_names <- function(mat, mat_degeneration) {
+#   r_1 = rownames(mat)
+#   r_2 = rownames(mat_degeneration)
+#   c_1 = colnames(mat)
+#   c_2 = colnames(mat_degeneration)
+#   # Calculate row and column names
+#   rowmat <- union(r_1, r_2)
+#   colmat <- union(c_1, c_2)
+#
+#   # Create resized matrices
+#   mat_degeneration_redim <- matrix(-1, ncol = length(colmat), nrow = length(rowmat), dimnames = list(rowmat, colmat))
+#   mat_redim <- mat_degeneration_redim
+#
+#   mat_redim[r_1, c_1] <- mat
+#   mat_degeneration_redim[r_2, c_2] <- mat_degeneration
+#
+#   # Calculate sensitivity and specificity
+#   sens <- sum(mat_degeneration_redim[mat_redim == mat_degeneration_redim] == 1) / sum(mat_degeneration_redim == 1)
+#   spec <- sum(mat_degeneration_redim[mat_redim == mat_degeneration_redim] == 0) / sum(mat_degeneration_redim == 0)
+#
+#   return(c(sens, spec))
+# }
 
 compute_comparaison <- function(all_net_result, clu_chrs_result, make_degeneration = TRUE){
   
@@ -236,16 +232,27 @@ compute_comparaison <- function(all_net_result, clu_chrs_result, make_degenerati
               mat_degeneration <- degenerationMatrix(mat_degeneration)
             }
             
-            rowmat = intersect(rownames(mat), rownames(mat_degeneration))
-            colmat = intersect(colnames(mat), colnames(mat_degeneration))
+            # redimenssion des deux matrices afin de calcluer les statistiques sur les intersections
+            rowmat = union(rownames(mat), rownames(mat_degeneration))
+            colmat = union(colnames(mat), colnames(mat_degeneration))
             
-            if(length(rowmat)== 0 || length(colmat)== 0){
-              crhs_comparation_res$sensibility_mat[ln, col] = 0
-              crhs_comparation_res$specificity_mat[ln, col] = 0
-            }else{
-              crhs_comparation_res$sensibility_mat[ln, col] = sum(mat_degeneration[mat[rowmat, colmat]==mat_degeneration[rowmat, colmat]]==1)/sum(mat_degeneration==1)
-              
-              crhs_comparation_res$specificity_mat[ln, col] = sum(mat_degeneration[mat[rowmat, colmat]==mat_degeneration[rowmat, colmat]]==0)/sum(mat_degeneration==0)
+            mat_degeneration_redim <- matrix(
+              -1,
+              ncol=length(colmat),
+              nrow=length(rowmat),
+              dimnames=list(rowmat, colmat)
+            )
+            mat_redim <- mat_degeneration_redim
+            
+            indxA <- outer(rowmat, colmat, FUN=paste) %in% outer(rownames(mat), colnames(mat), FUN=paste)
+            indxB <- outer(rowmat, colmat, FUN=paste) %in% outer(rownames(mat_degeneration), colnames(mat_degeneration), FUN=paste)
+            mat_redim[indxA] <- mat
+            mat_degeneration_redim[indxB] <- mat_degeneration
+            
+            crhs_comparation_res$sensibility_mat[ln, col] = sum(mat_degeneration_redim[mat_redim==mat_degeneration_redim]==1)/sum(mat_degeneration_redim==1)
+            
+            # mismatchs = length(rowmat[rowmat != rowmat_])*length(colmat[colmat != colmat_])
+            crhs_comparation_res$specificity_mat[ln, col] = sum(mat_degeneration_redim[mat_redim==mat_degeneration_redim]==0)/sum(mat_degeneration_redim==0)
             }
           }
         }
@@ -337,6 +344,17 @@ get_clusters_crhs <- function(clusters_matrix, resolution = "6Mb"){
 }
 ################################################################################
 
+set.seed(99999)
+resolution = "3Mb"
+load("rdata/umap.out_.rda")
+load("rdata/cellUperDiagData.rda")
+load("rdata/scHic_promoters_ids.rda")
+load("rdata/all_net_result_complex_3Mb_.rda")
+
+nb_cluster = 200:300
+n <- 10000
+umap_dt = umap.out$layout
+
 all_net_result_complex_deg = all_net_result_complex_
 for (bl in 2:16) {
   for (i in seq_len(length(all_net_result_complex_[[bl]]$crhs))) {
@@ -406,57 +424,53 @@ compute_res = function(cells_clusters, cell_data){
 }
 
 # repositionner aléatoirement les lignes des donnnées afin que le choix des blocs ne soit pas lié à la position initiale
+set.seed(123)
+indices <- sample(n)
+
+nb_echan = 20
+nb_cluster = c(295, 278, 288, 300, 299)
+k = 5
+nb_prom = c()
+nb_enhan = c()
+
+# Ici on procède à un shuffle des données
+umap_dt = umap_dt[indices, ]
+cellUperDiagData = cellUperDiagData[indices, ]
+
 
 boot_fn = function(data, rows){
   # Ici on selectionne l'échantillon bootstrap
-  print(format(Sys.time(), "%H:%M:%S"))
-  umap_dt_ <- umap_dt[rows, ]
-  cellUperDiagData_ <- cellUperDiagData[rows, ]
+  umap_dt_ = umap_dt[rows, ]
+  cellUperDiagData_ = cellUperDiagData[rows, ]
   
-  # Shuffle indices for cross-validation
+  # On procede à un shuffle pour la validation croisée
   indices_ <- sample(n)
-  sen_vec <- numeric(k)  # Preallocate vectors for efficiency
-  sep_vec <- numeric(k)
-  
-  # Initialize result matrix with enough rows and columns
-  res_matrix <- matrix(NA, nrow = k * length(nb_cluster), ncol = 4)
-  row_counter <- 1
-  
-  print(format(Sys.time(), "%H:%M:%S"))
+  sen_vec = c(k)
+  sep_vec = c(k)
   
   # Perform cross-validation
   for (i in 1:k) {
     # Calculate the start and end indices for the test set
-    fold_indices <- seq(((i - 1) * (n / k)) + 1, i * (n / k))
-    test_index <- indices_[fold_indices]
+    start <- ((i - 1) * (n / k)) + 1
+    end <- i * (n / k)
+    index <- indices_[start:end]
+    # On forme nos données d'entrainement et de test ici
+    test_data = umap_dt_[index, ]
+    test_cell_data = cellUperDiagData_[index, ]
     
-    # Split data into training and testing sets
-    test_data <- umap_dt_[test_index, ]
-    test_cell_data <- cellUperDiagData_[test_index, ]
-    train_index <- setdiff(indices_, test_index)
-    train_data <- umap_dt_[train_index, ]
-    train_cell_data <- cellUperDiagData_[train_index, ]
+    train_data = umap_dt_[setdiff(indices_, index), ]
+    train_cell_data = cellUperDiagData_[setdiff(indices_, index), ]
     
-    # Store results for this fold
-    rep_i <- matrix(NA, nrow = length(nb_cluster), ncol = 4)
-    colnames(rep_i) <- c("Fold", "Cluster", "Sep", "Sen")
+    rep_i <- NULL  # Initialize an empty variable to store the results
     
-    for (j in seq_along(nb_cluster)) {
-      clus <- nb_cluster[j]
-      
+    for (clus in nb_cluster) {
       # Apply k-means clustering
       cells_clusters <- kmeans(train_data, clus, trace = FALSE)
-      
-      # Compute clustering results
+      # Compute the results
       comp_res <- compute_res(cells_clusters, train_cell_data)
-      rep_i[j, ] <- c(i, clus, comp_res[1], comp_res[2])
-      print(paste0("j : ", j, format(Sys.time(), "%H:%M:%S")))
+      # Append the results as a row
+      rep_i <- rbind(rep_i, c(i, clus, comp_res[1], comp_res[2]))
     }
-    print(paste0("i : ", i, format(Sys.time(), "%H:%M:%S")))
-    
-    # Append results to the overall matrix
-    res_matrix[row_counter:(row_counter + nrow(rep_i) - 1), ] <- rep_i
-    row_counter <- row_counter + nrow(rep_i)
     
     # Determine optimal number of clusters based on sensitivity and specificity
     max_sen_indices <- which(rep_i[, 4] == max(rep_i[, 4]))
@@ -471,33 +485,25 @@ boot_fn = function(data, rows){
     cells_clusters <- kmeans(test_data, optimal_clus, trace = FALSE)
     comp_res <- compute_res(cells_clusters, test_cell_data)
     
-    print(format(Sys.time(), "%H:%M:%S"))
-    
-    # Append the final results for the test set
-    res_matrix[row_counter, ] <- c(i, optimal_clus, comp_res[1], comp_res[2])
-    row_counter <- row_counter + 1
-    
     # Store sensitivity and specificity
     sep_vec[i] <- comp_res[1]
     sen_vec[i] <- comp_res[2]
-    
-    print(format(Sys.time(), "%H:%M:%S"))
+    # res_nb_cluster = NbClust(data = train_data, distance = "euclidean", min.nc = 200, max.nc = 300, method = "kmeans")
+    # save(res_nb_cluster, file = paste0("rdata/res_nb_cluster_", i,".rda"))
   }
   
-  # Summarize results for sensitivity and specificity
-  sep_vec_sum <- summary(sep_vec)
-  sen_vec_sum <- summary(sen_vec)
-  
+  sep_vec_sum = summary(sep_vec)
+  sen_vec_sum = summary(sen_vec)
+  print("Fin pour un sous ensemble")
   return(c(sep_vec_sum[1], sep_vec_sum[2], sep_vec_sum[3], sep_vec_sum[4], sep_vec_sum[5], sep_vec_sum[6], sen_vec_sum[1], sen_vec_sum[2], sen_vec_sum[3], sen_vec_sum[4], sen_vec_sum[5], sen_vec_sum[6]))
 }
 
+r_boot = 1000
+ncpus = 31
 
 print("bootstrap debut")
 
 boot_res <- boot(cellUperDiagData, boot_fn, R=r_boot, parallel = "multicore", ncpus = ncpus)
 
-save(boot_res, file = "rdata/all_rda_data/get_optimal_boot_res.rda")
+save(boot_res, file = "rdata/get_optimal_boot_res.rda")
 print("End of bootstrap computation")
-
-save(res_matrix, file = "rdata/all_rda_data/get_optimal_res_matrix.rda")
-print("End")

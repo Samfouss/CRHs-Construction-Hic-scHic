@@ -1,4 +1,3 @@
-# Function to check and install a package if not installed
 install_if_not_installed <- function(package) {
   if (!require(package, character.only = TRUE)) {
     install.packages(package)
@@ -20,26 +19,26 @@ library(NbClust)
 library(boot)
 library(doParallel)
 library(foreach)
+library(igraph)
 
 set.seed(99999)
 resolution = "3Mb"
-load("rdata/umap.out_.rda")
-load("rdata/cellUperDiagData.rda")
-load("rdata/scHic_promoters_ids.rda")
-load("rdata/all_net_result_complex_3Mb_.rda")
+load("rdata/all_rda_data/umap.out_.rda")
+load("rdata/all_rda_data/cellUperDiagData.rda")
+load("rdata/all_rda_data/scHic_promoters_ids.rda")
+load("rdata/all_rda_data/all_net_result_complex_3Mb_.rda")
 
 nb_cluster = 200:300
 n <- 10000
 umap_dt = umap.out$layout
+rm(umap.out)
 k = 5
 
 res_matrix = matrix(NA, nrow =2 , ncol = 4)
+nb_prom_enhan_matrix = matrix(NA, nrow =2 , ncol = 3)
 
 # repositionner aléatoirement les lignes des donnnées afin que le choix des blocs ne soit pas lié à la position initiale
 indices <- sample(n)
-
-nb_prom = c()
-nb_enhan = c()
 
 # Ici on procède à un shuffle des données
 umap_dt = umap_dt[indices, ]
@@ -52,8 +51,6 @@ registerDoParallel(cl)
 
 # On procede à un shuffle pour la validation croisée
 indices_ <- sample(n)
-sen_vec = c()
-sep_vec = c()
 
 ##### Fonction permettant de construire les matrices d'incidence
 constr_mat_contacts <- function(cells_clusters, cellUperDiagData, get_incidence_mat=TRUE){
@@ -90,10 +87,10 @@ constr_mat_contacts <- function(cells_clusters, cellUperDiagData, get_incidence_
   clusters_matrix
 }
 
-source("create_graph_from_cells_fn.R")
+source("scripts/crhs_creation_with_cells/create_graph_from_cells_fn.R")
 ## Cette fonction permet de faire la comparaison entre les CRHs et donne les statistiques
 
-source("compute_comparaison.R")
+source("scripts/crhs_comparaison/compute_comparaison.R")
 
 degenerationMatrix <- function(matrixToDegenerate){
   
@@ -188,15 +185,21 @@ for (bl in 2:16) {
 }
 
 ###### Calcul du nombre de cluster optimal
-compute_res = function(cells_clusters, cell_data){
+compute_res = function(cells_clusters, cell_data, k){
   cluster_matrix_result = constr_mat_contacts(cells_clusters$cluster, cell_data)
   
   clu_chrs_result <- get_clusters_crhs(cluster_matrix_result, resolution = resolution)
   
+  nb_prom_enhan_res <- NULL
+  
   for (i in seq_len(length(clu_chrs_result))) {
     for (j in seq_len(length(clu_chrs_result[[i]]))) {
-      nb_prom = c(nb_prom, dim(clu_chrs_result[[i]][[j]]$mat_incidence)[1])
-      nb_enhan = c(nb_enhan, dim(clu_chrs_result[[i]][[j]]$mat_incidence)[2])
+      
+      nb_prom <- dim(clu_chrs_result[[i]][[j]]$mat_incidence)[1]
+      nb_enhan <- dim(clu_chrs_result[[i]][[j]]$mat_incidence)[2]
+      
+      # Append to the matrix
+      nb_prom_enhan_res <- rbind(nb_prom_enhan_res, c(k, nb_prom, nb_enhan))
     }
   }
   
@@ -242,7 +245,10 @@ compute_res = function(cells_clusters, cell_data){
   highest_sen = highest_sen[highest_sen[, 1] != "", ]
   highest_sen_ = as.numeric(highest_sen[, 3])
   
-  return(c(mean(highest_spec_), mean(highest_sen_)))
+  return(list(
+    nb_prom_enhan_res = nb_prom_enhan_res,
+    means = c(mean(highest_spec_), mean(highest_sen_))
+  ))
 }
 
 # Perform cross-validation
@@ -260,14 +266,17 @@ for (i in 1:k) {
   train_data <- umap_dt[setdiff(indices_, index), ]
   train_cell_data <- cellUperDiagData[setdiff(indices_, index), ]
   
-  # Run clustering in parallel over nb_cluster
-  print(format(Sys.time(), "%H:%M:%S"))
-  rep_i <- foreach(clus = nb_cluster, .combine = rbind) %dopar% {
-    cells_clusters <- kmeans(train_data, clus, trace = FALSE)
-    comp_res <- compute_res(cells_clusters, train_cell_data)
-    c(i, clus, comp_res[1], comp_res[2])
-  }
-  print(format(Sys.time(), "%H:%M:%S"))
+    for (clus in nb_cluster) {
+      cells_clusters <- kmeans(train_data, clus, trace = FALSE)
+      comp_res <- compute_res(cells_clusters, train_cell_data, i)
+      nb_prom_enhan_matrix <- rbind(nb_prom_enhan_matrix, comp_res$nb_prom_enhan_res)
+      print(nb_prom_enhan_matrix)
+      # Extract means from comp_res
+      mean_spec <- comp_res$means[1]
+      mean_sen <- comp_res$means[2]
+      c(i, clus, mean_spec, mean_sen)
+    }
+
   
   # Find the optimal number of clusters based on sensitivity and specificity
   max_sen <- which(rep_i[, 4] == max(rep_i[, 4]))
@@ -285,27 +294,27 @@ for (i in 1:k) {
   
   # Perform k-means on the test set with the optimal number of clusters
   cells_clusters <- kmeans(test_data, optimal_clus, trace = FALSE)
-  comp_res <- compute_res(cells_clusters, test_cell_data)
+  comp_res <- compute_res(cells_clusters, test_cell_data, i)
   
   # Collect the results for this fold
   res_matrix <- rbind(res_matrix, c(i, optimal_clus, comp_res[1], comp_res[2]))
-  sep_vec <- c(sep_vec, comp_res[1])
-  sen_vec <- c(sen_vec, comp_res[2])
   
   # Optional: Save results per fold if needed
   # res_nb_cluster = NbClust(data = train_data, distance = "euclidean", min.nc = 200, max.nc = 300, method = "kmeans")
   # save(res_nb_cluster, file = paste0("rdata/res_nb_cluster_", i,".rda"))
-  print(paste0("Fin ", i, format(Sys.time(), "%H:%M:%S")))
+  # Remove unused objects and free memory
+  save_path <- paste0("rdata/nb_prom_enhan_matrix_fold_", i, ".rda")
+  save(nb_prom_enhan_matrix, file = save_path)
+  
+  # Clear nb_prom_enhan_matrix to free memory
+  nb_prom_enhan_matrix <- matrix(NA, nrow =2 , ncol = 3)
+  rm(test_data, test_cell_data, train_data, train_cell_data, cells_clusters, rep_i)
+  gc()
+  print(paste0("Fin ", i, format(Sys.time(), " %H:%M:%S")))
 }
 
 # Stop the parallel backend
 stopCluster(cl)
-
-save(sep_vec, file = "rdata/sep_vec2.rda")
-save(sen_vec, file = "rdata/sen_vec2.rda")
-
-save(nb_prom, file = "rdata/nb_prom2.rda")
-save(nb_enhan, file = "rdata/nb_enhan2.rda")
 
 print("End of bootstrap computation")
 

@@ -40,7 +40,7 @@ source("scripts/crhs_comparaison/degenerationMatrix_fn.R")
 # Etape 4 : fonction permettant de faire la comparaison de CRHs
 source("scripts/crhs_comparaison/compute_comparaison.R")
 
-source("scripts/crhs_comparaison/create_graph_from_cells_fn.R")
+source("scripts/crhs_creation_with_cells/create_graph_from_cells_fn.R")
 
 get_clusters_crhs <- function(clusters_matrix, resolution = "6Mb"){
   clu_chrs_result = list()
@@ -71,7 +71,7 @@ for (bl in 2:16) {
 
 
 boot_fn = function(data, rows){
-  
+  print(paste0("Début : ", format(Sys.time(), "%H:%M:%S")))
   j = 1
   for (k in 1:num_groups) {
     # Définir les groupe de type de cellules : On a exactement 40 cellules par types de cellules
@@ -152,7 +152,11 @@ boot_fn = function(data, rows){
   
   
   return(c(median(highest_spec_), median(highest_sen_), mean(highest_spec_), mean(highest_sen_)))
+  print(paste0("Fin : ", format(Sys.time(), "%H:%M:%S")))
 }
+
+
+boot_res <- boot(cellUperDiagData, boot_fn, R=2)
 
 
 boot_res <- boot(cellUperDiagData, boot_fn, R=r_boot, parallel = "multicore", ncpus = ncpus)
