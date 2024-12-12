@@ -255,7 +255,6 @@ compute_comparaison <- function(all_net_result, clu_chrs_result, make_degenerati
             crhs_comparation_res$specificity_mat[ln, col] = sum(mat_degeneration_redim[mat_redim==mat_degeneration_redim]==0)/sum(mat_degeneration_redim==0)
             }
           }
-        }
       }
     }
   }
@@ -356,14 +355,6 @@ n <- 10000
 umap_dt = umap.out$layout
 
 all_net_result_complex_deg = all_net_result_complex_
-for (bl in 2:16) {
-  for (i in seq_len(length(all_net_result_complex_[[bl]]$crhs))) {
-    mat = all_net_result_complex_[[bl]]$crhs[[i]]$mat_incidence
-    if(sum(mat)!=-1){
-      all_net_result_complex_deg[[bl]]$crhs[[i]][[2]]= degenerationMatrix(mat)
-    }
-  }
-}
 
 ###### Calcul du nombre de cluster optimal
 compute_res = function(cells_clusters, cell_data){
@@ -371,12 +362,6 @@ compute_res = function(cells_clusters, cell_data){
   
   clu_chrs_result <- get_clusters_crhs(cluster_matrix_result, resolution = resolution)
   
-  for (i in seq_len(length(clu_chrs_result))) {
-    for (j in seq_len(length(clu_chrs_result[[i]]))) {
-      nb_prom = c(nb_prom, dim(clu_chrs_result[[i]][[j]]$mat_incidence)[1])
-      nb_enhan = c(nb_enhan, dim(clu_chrs_result[[i]][[j]]$mat_incidence)[2])
-    }
-  }
   
   crhs_comparaison_res = compute_comparaison(all_net_result_complex_deg, clu_chrs_result, make_degeneration = FALSE)
   
@@ -430,8 +415,6 @@ indices <- sample(n)
 nb_echan = 20
 nb_cluster = c(295, 278, 288, 300, 299)
 k = 5
-nb_prom = c()
-nb_enhan = c()
 
 # Ici on procède à un shuffle des données
 umap_dt = umap_dt[indices, ]

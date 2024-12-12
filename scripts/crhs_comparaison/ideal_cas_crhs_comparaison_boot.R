@@ -57,8 +57,6 @@ get_clusters_crhs <- function(clusters_matrix, resolution = "6Mb"){
   clu_chrs_result
 }
 
-
-
 all_net_result_complex_deg = all_net_result_complex_
 for (bl in 2:16) {
   for (i in seq_len(length(all_net_result_complex_[[bl]]$crhs))) {

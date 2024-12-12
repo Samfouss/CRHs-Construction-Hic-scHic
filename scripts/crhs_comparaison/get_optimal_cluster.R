@@ -185,21 +185,23 @@ for (bl in 2:16) {
 }
 
 ###### Calcul du nombre de cluster optimal
-compute_res = function(cells_clusters, cell_data, k){
+compute_res = function(cells_clusters, cell_data, k, get_clus_stat = FALSE){
   cluster_matrix_result = constr_mat_contacts(cells_clusters$cluster, cell_data)
   
   clu_chrs_result <- get_clusters_crhs(cluster_matrix_result, resolution = resolution)
   
   nb_prom_enhan_res <- NULL
   
-  for (i in seq_len(length(clu_chrs_result))) {
-    for (j in seq_len(length(clu_chrs_result[[i]]))) {
-      
-      nb_prom <- dim(clu_chrs_result[[i]][[j]]$mat_incidence)[1]
-      nb_enhan <- dim(clu_chrs_result[[i]][[j]]$mat_incidence)[2]
-      
-      # Append to the matrix
-      nb_prom_enhan_res <- rbind(nb_prom_enhan_res, c(k, nb_prom, nb_enhan))
+  if(get_clus_stat){
+    for (i in seq_len(length(clu_chrs_result))) {
+      for (j in seq_len(length(clu_chrs_result[[i]]))) {
+        
+        nb_prom <- dim(clu_chrs_result[[i]][[j]]$mat_incidence)[1]
+        nb_enhan <- dim(clu_chrs_result[[i]][[j]]$mat_incidence)[2]
+        
+        # Append to the matrix
+        nb_prom_enhan_res <- rbind(nb_prom_enhan_res, c(k, nb_prom, nb_enhan))
+      }
     }
   }
   
@@ -294,7 +296,8 @@ for (i in 1:k) {
   
   # Perform k-means on the test set with the optimal number of clusters
   cells_clusters <- kmeans(test_data, optimal_clus, trace = FALSE)
-  comp_res <- compute_res(cells_clusters, test_cell_data, i)
+  # Faire la comparaison des CRHs puis ajouter les statistiques sur les réseaux
+  comp_res <- compute_res(cells_clusters, test_cell_data, i, get_clus_stat = TRUE)
   
   # Collect the results for this fold
   res_matrix <- rbind(res_matrix, c(i, optimal_clus, comp_res[1], comp_res[2]))

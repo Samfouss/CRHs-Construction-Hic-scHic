@@ -1,3 +1,5 @@
+## Cette fonction permet de faire la comparaison entre les CRHs et donne les statistiques
+
 compute_comparaison <- function(all_net_result, clu_chrs_result, make_degeneration = FALSE){
   # print(format(Sys.time(), "%H:%M:%S"))
   
