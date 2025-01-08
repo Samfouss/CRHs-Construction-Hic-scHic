@@ -413,7 +413,6 @@ set.seed(123)
 indices <- sample(n)
 
 nb_echan = 20
-nb_cluster = c(295, 278, 288, 300, 299)
 k = 5
 
 # Ici on procède à un shuffle des données

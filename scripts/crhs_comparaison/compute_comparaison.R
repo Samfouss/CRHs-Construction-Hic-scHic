@@ -81,15 +81,6 @@ compute_comparaison <- function(all_net_result, clu_chrs_result, make_degenerati
             rowmat = intersect(rownames(mat), rownames(mat_degeneration))
             colmat = intersect(colnames(mat), colnames(mat_degeneration))
             
-            # if(length(rowmat)== 0 || length(colmat)== 0){
-            #   crhs_comparation_res$sensibility_mat[ln, col] = NA
-            #   crhs_comparation_res$specificity_mat[ln, col] = NA
-            # }else{
-            #   crhs_comparation_res$sensibility_mat[ln, col] = sum(mat_degeneration[rowmat, colmat][mat[rowmat, colmat]==mat_degeneration[rowmat, colmat]]==1)/sum(mat_degeneration==1)
-            #   
-            #   crhs_comparation_res$specificity_mat[ln, col] = sum(mat_degeneration[rowmat, colmat][mat[rowmat, colmat]==mat_degeneration[rowmat, colmat]]==0)/sum(mat_degeneration==0)
-            # }
-            
             crhs_comparation_res$sensibility_mat[ln, col] = sum(mat_degeneration[rowmat, colmat][mat[rowmat, colmat]==mat_degeneration[rowmat, colmat]]==1)/sum(mat_degeneration==1)
             
             crhs_comparation_res$specificity_mat[ln, col] = sum(mat_degeneration[rowmat, colmat][mat[rowmat, colmat]==mat_degeneration[rowmat, colmat]]==0)/sum(mat_degeneration==0)

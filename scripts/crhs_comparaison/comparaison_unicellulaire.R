@@ -1,6 +1,7 @@
 load("rdata/all_rda_data/all_net_result_complex_3Mb_.rda")
 load("rdata/all_rda_data/ideal_crhs_comparaison_res.rda")
 
+
 lines = 0
 for (bl in 2:16) {
   lines = length(all_net_result_complex_[[bl]]$more_info) + lines

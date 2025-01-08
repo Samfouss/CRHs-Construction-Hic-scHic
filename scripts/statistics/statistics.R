@@ -274,7 +274,12 @@ boot.ci(boot_res, type=c("norm", "basic", "perc"), index = 3)
 boot.ci(boot_res, type=c("norm", "basic", "perc"), index = 4)
 
 
+####################### Calcul des intervalles de confiances dans le cas idéal
 
+load("rdata/all_rda_data/ideal_boot_res.rda")
+2*boot_res$t0 - colMeans(boot_res$t)
+boot.ci(boot_res, type=c("norm", "basic", "perc"), index = 3)
+boot.ci(boot_res, type=c("norm", "basic", "perc"), index = 4)
 
 
 

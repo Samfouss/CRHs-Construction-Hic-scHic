@@ -38,7 +38,7 @@ ncpus = 31
 source("scripts/crhs_comparaison/degenerationMatrix_fn.R")
 
 # Etape 4 : fonction permettant de faire la comparaison de CRHs
-source("scripts/crhs_comparaison/compute_comparaison.R")
+source("scripts/crhs_comparaison/compute_comparaison_ancien.R")
 
 source("scripts/crhs_creation_with_cells/create_graph_from_cells_fn.R")
 
@@ -153,21 +153,11 @@ boot_fn = function(data, rows){
   print(paste0("Fin : ", format(Sys.time(), "%H:%M:%S")))
 }
 
-
-boot_res <- boot(cellUperDiagData, boot_fn, R=2)
-
-
 boot_res <- boot(cellUperDiagData, boot_fn, R=r_boot, parallel = "multicore", ncpus = ncpus)
 
 save(boot_res, file = "rdata/ideal_boot_res.rda")
 print("End of bootstrap computation")
 
-
-
-load("rdata/all_rda_data/ideal_boot_res.rda")
-2*boot_res$t0 - colMeans(boot_res$t)
-boot.ci(boot_res, type=c("norm", "basic", "perc"), index = 3)
-boot.ci(boot_res, type=c("norm", "basic", "perc"), index = 4)
 
 
 
